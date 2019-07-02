@@ -1,14 +1,29 @@
-import { LitElement, html ,css} from '../web_modules/lit-element.js';
+import { MvElement } from "../web_modules/mv-element.js";
+import { html ,css} from '../web_modules/lit-element.js';
 import  "./TodoItem.js";
 import  "./TodoCreator.js";
 
-class TodoApp extends LitElement {
+class TodoList extends MvElement {
     static get properties() {
         return {
-          todoItems: { type: Array }
+          name: { attribute: true },
+          title: { type : String },
+          todoItems: { type: Array },
+          storage: { type : String, attribute:true}
         };
     }
 
+    static get model(){
+      return { 
+          modelClass:"TodoList",
+          storage:"localStorage",
+          mapping:{
+            title:"title",
+            todoItems:"items"
+          }
+        };
+    }
+    
     static get styles() {
       return css`
       :host {
@@ -22,51 +37,27 @@ class TodoApp extends LitElement {
       }
       `;
     } 
-
+  
     constructor(){
         super();
         this.todoItems = [];
     }
 
-    addTodo(todoItem){
-      this.todoItems = [
-        ...this.removeTodoNoUpdate(todoItem),
-        todoItem
-      ];
-    }
-
-    removeTodoNoUpdate(todoItem){
-      return this.todoItems.filter(t => t.value!=todoItem.value);
-    }
-
-    removeTodo(todoItem){
-      this.todoItems=this.removeTodoNoUpdate(todoItem);
-    }
-
-    completeTodo(todoItem){
-      this.todoItems=this.todoItems.map(t => { 
-        if (t.value==todoItem.value) {
-          t.completed=true
-        }; 
-        return t 
-      });
-    }
-
     todoCreationHandler(e){
-      this.addTodo(e.detail);
+      this.store.addItem("items",e.detail);
     }
 
     todoDeletionHandler(e){
-      this.removeTodo(e.detail);
+      this.store.removeItem("items",e.detail);
     }
 
     todoCompletionHandler(e){
-      this.completeTodo(e.detail);
+      this.store.updateItem("items",{...e.detail,completed:true});
     }
 
     render(){
       return html`
-      <div class="title">Hello Todo</div>
+      <div class="title">${this.title}</div>
       <div class="todo-items">
         ${this.todoItems.map(i => html`<todo-item @todo-delete="${this.todoDeletionHandler}" @todo-complete="${this.todoCompletionHandler}" .value="${i.value}" .completed=${i.completed}></todo-item>`)}
       </div>
@@ -74,4 +65,4 @@ class TodoApp extends LitElement {
   }
 }
 
-window.customElements.define("todo-app",TodoApp);
+window.customElements.define("todo-list",TodoList);

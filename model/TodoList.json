@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title":"TodoList",
+    "type":"object",
+    "properties":{
+        "title":{"type":"string"},
+        "items":{
+            "type":"array",
+            "items":{
+                "$ref":"./TodoItem.json"
+            }
+        }
+    }
+}
