@@ -26,11 +26,13 @@ export class MvStore {
         this.listeners = {};
         this.subStores = {};
         this.state = parentStore == null ? {} : parentStore.registerSubStore(this);
-        this.registerElementListener(element);
+        if(element.constructor.model.mappings){
+            this.registerElementListener(element,element.constructor.model.mappings,false,this);
+        }
         if (Object.entries(this.state).length === 0) {
             this.initLocalState(element, element.constructor.model);
         }
-        this.dispatch(null);
+        this.dispatch("");
     }
 
     async initLocalState(element, model) {
@@ -82,70 +84,67 @@ export class MvStore {
     }
 
 
-    extractNamesFromAst(ast,names,extendsName){
-        if(ast.hasOwnProperty("type") && ast.type=="name"){
-            if(extendsName){ast.value=this.name+"."+ast.value;};
-            if(names.indexOf(ast.value) === -1) { names.push(ast.value);}
+    extractNamesFromAst(ast,names){
+        if(ast.hasOwnProperty("type") && ast.type=="path"){
+            const value = ast.steps.reduce((acc,step)=>{if(step.type==="name"){
+                if(acc==="") {
+                    return step.value;
+                } else {
+                    return acc+"."+step.value;
+                }
+            } else {
+                return acc;
+            }},"")
+            if(names.indexOf(value) === -1) { names.push(value);}
         } else {
             Object.keys(ast).forEach( k => {
                 if(Array.isArray(ast[k]) && ["arguments","expressions","steps"].includes(k)){
                     for(let a of ast[k]){
                         if(typeof a === "object"){
-                            this.extractNamesFromAst(a,names,extendsName);
+                            this.extractNamesFromAst(a,names);
                         }
                     }
                 } else if(typeof ast[k] === "object"){
-                    this.extractNamesFromAst(ast[k],names,extendsName);
+                    this.extractNamesFromAst(ast[k],names);
                 }
             });
         }
     }
 
-    extractNamesFromMappings(mappings,names,extendsName) {
-        names=[];
+    extractNamesFromMappings(mappings,names) {
         for (const mapping of mappings) {
             if(mapping.value){
-                if(extendsName){mapping.value=this.name+"."+mapping.value;};
                 if(names.indexOf(mapping.value) === -1) { names.push(mapping.value);};
             } else if(mapping.jsonataExpression){
                 if(!mapping.jsonata){
                     mapping.jsonata=jsonata(mapping.jsonataExpression);
                 }
-                this.extractNamesFromAst(mapping.jsonata.ast(),names,extendsName);
+                this.extractNamesFromAst(mapping.jsonata.ast(),names);
             }
         }
     }
 
-    registerElementListener(element,mappingsProp) {
-        let mappings = [];
-        if (!mappingsProp) {
-            if (!element.constructor.model || !element.constructor.model.mappings) {
-                return;
-            } else {
-                mappings = element.constructor.model.mappings;
-            }
-        } else {
-            mappings = mappingsProp;
-        }
+    registerElementListener(element,mappings,names,store) {
         mappings=mappings.map((m) => {
             if(m.jsonataExpression) {
                return { ...m, jsonata: jsonata(m.jsonataExpression) } 
             }
             return m;
            });
-        let names=[];
+        if(!names){
+            names=[];
+            this.extractNamesFromMappings(mappings,names);
+        }
         if (this.parentStore) {
-            this.extractNamesFromMappings(mappings,names,true);
-            this.parentStore.registerElementListener(element,mappings);
+            names=names.map((name)=>this.name+"."+name);
+            this.parentStore.registerElementListener(element,mappings,names,(!store)?this:store);
         } else {
-            if(names.length==0){
-                this.extractNamesFromMappings(mappings,names,false);
-            }
             for(let name of names){
                 if (!this.listeners[name]) {
                     this.listeners[name] = [];
                 }
-                this.listeners[name].push({ element, mappings});
+                this.listeners[name].push({ element, mappings, store:(!store)?this:store});
+                console.log("register listener on "+name);
             }
         }
     }
@@ -172,30 +171,51 @@ export class MvStore {
         }
     }
 
-    dispatch(itemName, name = "") {
+    dispatch(storeName="",itemName=null) {
         if (this.parentStore) {
-            this.parentStore.dispatch(itemName, this.name + (name == "" ? "" : ("." + name)));
+            this.parentStore.dispatch(this.name + (storeName == "" ? "" : ("." + storeName)),itemName);
         } else {
-            if (this.listeners.hasOwnProperty(name)) {
-                for (const listener of this.listeners[name]) {
+                let interestedListeners=[];
+                Object.keys(this.listeners).forEach(listenerName => {
+                    let addListener=false;
+                    if(itemName==null){
+                        addListener=(listenerName==storeName || listenerName.startsWith(storeName+".") || storeName==="");
+                    } else {
+                        addListener=(listenerName==storeName || listenerName==storeName+"."+itemName);
+                    }
+                    if(addListener){
+                        for(const listener of this.listeners[listenerName]){
+                            if(interestedListeners.length==0){
+                                interestedListeners.push(listener);
+                            } else {
+                                let listenerExists=false;
+                                for(const l of interestedListeners){
+                                    if(l.element===listener.element){
+                                        listenerExists=true;
+                                        break;
+                                    }
+                                }
+                                if(!listenerExists) { 
+                                    interestedListeners.push(listener);
+                                };
+                            }
+                        }
+                    }
+                });
+                console.log("dispatch "+storeName+"."+itemName+"to"+interestedListeners.length+" listeners");
+                for (const listener of interestedListeners) {
                     let element = listener.element;
                     for (const mapping of listener.mappings) {
                         if (mapping.jsonata) {
-                            element[mapping.property] = mapping.jsonata.evaluate(this.state);
-                        } else if (mapping.value && (itemName == null || mapping.value.endsWith(itemName))) {
-                            const pathItems=mapping.value.split(".");
-                            let subState = this.state;
-                            for(const pathItem of pathItems){
-                                subState=subState[pathItem];
-                            }
-                            element[mapping.property] = subState;
+                            element[mapping.property] = mapping.jsonata.evaluate(listener.store.state);
+                        } else if (mapping.value && (itemName == null || mapping.value===itemName)) {
+                            element[mapping.property] = listener.store.state[mapping.value];
                         }
                     }
                 }
-            }
+                //TODO move that in mutation methods
+                this.storeState();
         }
-        //TODO move that in mutation methods
-        this.storeState();
     }
 
     filterOutSubstores(state, substoreNames) {

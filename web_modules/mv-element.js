@@ -26,7 +26,7 @@ export class MvElement extends LitElement {
         //TODO set parent store to its first parent MvElement's store.
         let parentStore=this.getParentStore(this.parentNode);
         //initialise store from model
-        this.store = new MvStore(this.attributes['name'].value,this,parentStore); 
+        this.store = new MvStore(this.attributes['name'].value,this,parentStore);
         super.connectedCallback();
     }
     
