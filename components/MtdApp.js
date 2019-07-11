@@ -40,7 +40,7 @@ class MtdApp extends MvElement {
     firstUpdated(changedProperties){
       let counterElmt = this.shadowRoot.querySelector("mtd-counter");
       this.store.registerElementListener(counterElmt,[{property:"counter",jsonataExpression:"$count(todo1.items)+$count(todo2.items)"}]);
-      this.store.dispatch("");
+      this.store.dispatch();
     }
 
     render(){

@@ -1,0 +1,1439 @@
+{
+	"info": {
+		"_postman_id": "13f4c2b0-11e5-4d57-844e-5acfc42ca67a",
+		"name": "Endpoints",
+		"description": "- Log\n\n- Create a connector that return page with url \"http://www.leboncoin.fr\"\n- Create a synchronous GET endpoint for that connector\n- Test the result\n\n- Create an extractor that return some odd data whatever the document\n- Create an asynchronous POST endpoint for that extractor\n- Start the execution\n- Retrieve the result\n\n- Update one endpoint\n- Delete endpoints\n- Delete extractor and connector\n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "81606899-040a-4cda-813d-3275ae195602",
+								"exec": [
+									"pm.test(\"response is ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.environment.get(\"variable_key\");",
+									"var json = pm.response.json();",
+									"var token = json[\"access_token\"];",
+									"var refreshToken = json[\"refresh_token\"]",
+									"pm.environment.set(\"access_token\", token);",
+									"pm.environment.set(\"refresh_token\", refreshToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{keycloakClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{keycloakUsername}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{keycloakPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{keycloakClientSecret}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/auth/realms/investigation-core/protocol/openid-connect/token",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"auth",
+								"realms",
+								"investigation-core",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						},
+						"description": "Request Keycloak and get auth token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Web Application entities",
+			"item": [
+				{
+					"name": "Create CSSSRule CET",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"code\": \"CSSRule\",\n        \"labels\": [],\n        \"storeAsTable\": false,\n        \"name\": \"CSS Rule\",\n        \"description\": \"Css rule\",\n        \"primitiveEntity\": false,\n        \"field\": [\n            {\n                \"code\": \"selector\",\n                \"description\": \"css selector\",\n                \"fieldType\": \"STRING\",\n                \"accountLevel\": \"CE_CSSRule\",\n                \"appliesTo\": \"CE_CSSRule\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": true,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"maxValue\": 255,\n                \"guiPosition\": \"tab:CSS Rule:0;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            },\n            {\n                \"code\": \"properties\",\n                \"description\": \"properties\",\n                \"fieldType\": \"STRING\",\n                \"accountLevel\": \"CE_CSSRule\",\n                \"appliesTo\": \"CE_CSSRule\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"MAP\",\n                \"valueRequired\": true,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"maxValue\": 255,\n                \"guiPosition\": \"tab:CSS Rule:0;field:1\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            }\n        ],\n        \"action\": [],\n        \"uniqueConstraint\": []\n    }"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/cet/createOrUpdate",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"cet",
+								"createOrUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get CET CSSRule",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/CSSRule",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"entity",
+								"CSSRule"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create CSSStyleSheet CET",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"code\": \"CSSStyleSheet\",\n        \"labels\": [],\n        \"storeAsTable\": false,\n        \"name\": \"CSS Stylesheet\",\n        \"description\": \"Css stylesheet\",\n        \"primitiveEntity\": false,\n        \"field\": [\n            {\n                \"code\": \"crossorigin\",\n                \"description\": \"crossorigin policy when the external url is not a local one\",\n                \"fieldType\": \"LIST\",\n                \"accountLevel\": \"CE_CSSStyleSheet\",\n                \"appliesTo\": \"CE_CSSStyleSheet\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"listValues\": {\n                    \"anonymous\": \"Anonymous\",\n                    \"use-credentials\": \"Use credentials\"\n                },\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Link:1;field:3\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            },\n            {\n                \"code\": \"externalURL\",\n                \"description\": \"External stylesheet URL\",\n                \"fieldType\": \"STRING\",\n                \"accountLevel\": \"CE_CSSStyleSheet\",\n                \"appliesTo\": \"CE_CSSStyleSheet\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"maxValue\": 255,\n                \"guiPosition\": \"tab:Link:1;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            },\n            {\n                \"code\": \"integrity\",\n                \"description\": \"base64-encoded cryptographic hash of the css file\",\n                \"fieldType\": \"STRING\",\n                \"accountLevel\": \"CE_CSSStyleSheet\",\n                \"appliesTo\": \"CE_CSSStyleSheet\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"maxValue\": 255,\n                \"guiPosition\": \"tab:Link:1;field:2\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            },\n            {\n                \"code\": \"CSSRules\",\n                \"description\": \"CSS rules\",\n                \"fieldType\": \"CHILD_ENTITY\",\n                \"accountLevel\": \"CE_CSSStyleSheet\",\n                \"appliesTo\": \"CE_CSSStyleSheet\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"LIST\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"entityClazz\": \"org.meveo.model.customEntities.CustomEntityTemplate - CSSRule\",\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Rules:2;field:1\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"fieldCode\": [\n                    \"code\",\n                    \"selector\"\n                ]\n            },\n            {\n                \"code\": \"content\",\n                \"description\": \"text rules\",\n                \"fieldType\": \"TEXT_AREA\",\n                \"accountLevel\": \"CE_CSSStyleSheet\",\n                \"appliesTo\": \"CE_CSSStyleSheet\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Rules:2;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            }\n        ],\n        \"action\": [],\n        \"uniqueConstraint\": []\n    \n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/cet/createOrUpdate",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"cet",
+								"createOrUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get CET CSSStyleSheet",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/CSSStyleSheet",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"entity",
+								"CSSStyleSheet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Custom Element Attribute CET",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"code\": \"CustomElementAttribute\",\n        \"labels\": [],\n        \"storeAsTable\": false,\n        \"name\": \"Custom element attribute\",\n        \"description\": \"an attribute of an HTML custom element\",\n        \"primitiveEntity\": false,\n        \"customEntityCategoryCode\": \"Technical\",\n        \"availableStorages\": [],\n        \"field\": [\n            {\n                \"code\": \"defaultValue\",\n                \"description\": \"default value\",\n                \"fieldType\": \"STRING\",\n                \"accountLevel\": \"CE_CustomElementAttribute\",\n                \"appliesTo\": \"CE_CustomElementAttribute\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"maxValue\": 255,\n                \"guiPosition\": \"tab:Custom element attribute:0;field:3\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": []\n            },\n            {\n                \"code\": \"observable\",\n                \"description\": \"is observable\",\n                \"fieldType\": \"BOOLEAN\",\n                \"accountLevel\": \"CE_CustomElementAttribute\",\n                \"appliesTo\": \"CE_CustomElementAttribute\",\n                \"defaultValue\": \"false\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Custom element attribute:0;field:2\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": []\n            },\n            {\n                \"code\": \"storage\",\n                \"description\": \"storage\",\n                \"fieldType\": \"LIST\",\n                \"accountLevel\": \"CE_CustomElementAttribute\",\n                \"appliesTo\": \"CE_CustomElementAttribute\",\n                \"defaultValue\": \"single\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"listValues\": {\n                    \"array\": \"array\",\n                    \"single\": \"single\"\n                },\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Custom element attribute:0;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": []\n            },\n            {\n                \"code\": \"variableType\",\n                \"description\": \"Type\",\n                \"fieldType\": \"LIST\",\n                \"accountLevel\": \"CE_CustomElementAttribute\",\n                \"appliesTo\": \"CE_CustomElementAttribute\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"listValues\": {\n                    \"boolean\": \"boolean\",\n                    \"int\": \"int\",\n                    \"string\": \"string\"\n                },\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Custom element attribute:0;field:1\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": []\n            }\n        ],\n        \"action\": [],\n        \"uniqueConstraint\": []\n    }"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/cet/createOrUpdate",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"cet",
+								"createOrUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get CET CustomElementAttribute",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/CustomElementAttribute",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"entity",
+								"CustomElementAttribute"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "create CET WebApplication Copy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/Application",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"investigation-core",
+										"api",
+										"rest",
+										"entityCustomization",
+										"entity",
+										"Application"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 25 Apr 2019 14:55:55 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-store, must-revalidate, max-age=0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Undertow/1"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkY2IzZTFjOC1lMWI0LTRlMDUtOTQ0Yy1lMmEyNTg0OTQ0MGEifQ.eyJjaWQiOiJtZXZlby13ZWIiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwczovL292aC1pbnRlZ3JhdGlvbi53ZWJkcm9uZS5mcjoyMDk2L2ludmVzdGlnYXRpb24tY29yZS9hcGkvcmVzdC9lbnRpdHlDdXN0b21pemF0aW9uL2VudGl0eS9BcHBsaWNhdGlvbiIsImFjdCI6IkFVVEhFTlRJQ0FURSIsIm5vdGVzIjp7InNjb3BlIjoib3BlbmlkIiwiaXNzIjoiaHR0cHM6Ly9vdmgtaW50ZWdyYXRpb24ud2ViZHJvbmUuZnI6MjA5Ni9hdXRoL3JlYWxtcy9pbnZlc3RpZ2F0aW9uLWNvcmUiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsImNvZGVfY2hhbGxlbmdlX21ldGhvZCI6InBsYWluIiwicmVkaXJlY3RfdXJpIjoiaHR0cHM6Ly9vdmgtaW50ZWdyYXRpb24ud2ViZHJvbmUuZnI6MjA5Ni9pbnZlc3RpZ2F0aW9uLWNvcmUvYXBpL3Jlc3QvZW50aXR5Q3VzdG9taXphdGlvbi9lbnRpdHkvQXBwbGljYXRpb24iLCJzdGF0ZSI6IjcwNWI1ODc3LWY0NzItNDllNy1hYTRmLWQ5NWFjYTdjMDU2YiIsImNsaWVudF9yZXF1ZXN0X3BhcmFtX2xvZ2luIjoidHJ1ZSJ9fQ.8R7iXpSXEH9IfbE4DoigKX-jo8K2okCrxOdqt7Pt_gk; Version=1; Path=/auth/realms/investigation-core/; Secure; HttpOnly"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';"
+								},
+								{
+									"key": "X-Robots-Tag",
+									"value": "none"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=31536000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Content-Language",
+									"value": "en"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\""
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "4cd129264ee93bed-CDG"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"body": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" class=\"login-pf\">\n    <head>\n        <meta charset=\"utf-8\">\n        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"robots\" content=\"noindex, nofollow\">\n        <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n        <title>        Log in to investigation-core\n</title>\n        <link rel=\"icon\" href=\"/auth/resources/4.8.3.final/login/webdrone/img/favicon.png\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/lib/patternfly/css/patternfly.css\" rel=\"stylesheet\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/lib/zocial/zocial.css\" rel=\"stylesheet\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/css/login.css\" rel=\"stylesheet\" />\n    </head>\n    <body class=\"\">\n        <div class=\"container-fluid login-container\">\n            <div class=\"row\">\n                <div class=\"col-md-12 container-form login-form\">\n                    <div class=\"container-fluid login-container\">\n                        <div class=\"row\">\n                            <div class=\"col-md-12\">\n                                <div class=\"form_header text-center\">\n                                    <h2>AUTHENTICATION</h2>\n                                    <p>Please enter your username and password to access your account.</p>\n                                </div>\n                                <form id=\"kc-form-login\" class=\"login-form\" action=\"https://ovh-integration.webdrone.fr:2096/auth/realms/investigation-core/login-actions/authenticate?session_code=0xPLnTh2l-LLSBXBEsszhuCCjaqLJ1D33vGK8qGDHgY&amp;execution=4231790b-48e0-43ed-9ce4-fcfab7adcbd1&amp;client_id=meveo-web&amp;tab_id=QJvpa__wOSU\" method=\"post\">\n                                    <div class=\"form-group col-md-12\">\n                                        <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding\">\n                                            <label for=\"username\" class=\"control-label\">Username or email</label>\n                                        </div>\n                                        <div class=\"col-xs-12 col-sm-12 col-md-8 col-lg-8 no-padding\">\n                                            <input id=\"username\" class=\"form-control col-md-10\" name=\"username\" value=\"\" type=\"text\" autofocus autocomplete=\"off\" />\n                                        </div>\n                                    </div>\n                                    <div class=\"form-group col-md-12\">\n                                        <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding\">\n                                            <label for=\"password\" class=\"control-label\">Password</label>\n                                        </div>\n                                        <div class=\"col-xs-12 col-sm-12 col-md-8 col-lg-8 no-padding\">\n                                            <input id=\"password\" class=\"form-control col-md-10\" name=\"password\" type=\"password\" autocomplete=\"off\" />\n                                        </div>\n                                    </div>\n                                    <div class=\"form-group col-md-12\">\n                                        <div id=\"kc-form-options\" class=\"col-xs-7 no-padding\">\n                                            <div class=\"\">\n                        </div>\n                                        </div>\n                                        <div id=\"kc-form-buttons\" class=\"col-xs-5 submit no-padding\">\n                                            <div class=\"\">\n                                                <input class=\"btn pull-right btn-primary btn-lg\" name=\"login\" id=\"kc-login\" type=\"submit\" value=\"Log in\"/>\n                                            </div>\n                                        </div>\n                                    </div>\n                                </form>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <span class=\"footer-text\">2018&copy; Webdrone</span>\n            <span class=\"footer-logo\"></span>\n        </div>\n    </body>\n</html>"
+						}
+					]
+				},
+				{
+					"name": "Create Custom Element CET",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"code\": \"CustomElement\",\n        \"labels\": [],\n        \"storeAsTable\": false,\n        \"name\": \"HTML Custom element\",\n        \"description\": \"Meveo generated custom HTML element\",\n        \"primitiveEntity\": false,\n        \"customEntityCategoryCode\": \"Technical\",\n        \"field\": [\n            {\n                \"code\": \"attributes\",\n                \"description\": \"attributes\",\n                \"fieldType\": \"CHILD_ENTITY\",\n                \"accountLevel\": \"CE_CustomElement\",\n                \"appliesTo\": \"CE_CustomElement\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"LIST\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"entityClazz\": \"org.meveo.model.customEntities.CustomEntityTemplate - CustomElementAttribute\",\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Attributes:2;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": [],\n                \"fieldCode\": [\n                    \"code\",\n                    \"storage\",\n                    \"variableType\",\n                    \"observable\",\n                    \"defaultValue\"\n                ]\n            },\n            {\n                \"code\": \"tagName\",\n                \"description\": \"Tag name\",\n                \"fieldType\": \"STRING\",\n                \"accountLevel\": \"CE_CustomElement\",\n                \"appliesTo\": \"CE_CustomElement\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": true,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"maxValue\": 255,\n                \"guiPosition\": \"tab:Information:0;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": []\n            },\n            {\n                \"code\": \"template\",\n                \"description\": \"HTML Template\",\n                \"fieldType\": \"TEXT_AREA\",\n                \"accountLevel\": \"CE_CustomElement\",\n                \"appliesTo\": \"CE_CustomElement\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Template:2;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            },\n            {\n                \"code\": \"url\",\n                \"description\": \"url of distant script\",\n                \"fieldType\": \"STRING\",\n                \"accountLevel\": \"CE_CustomElement\",\n                \"appliesTo\": \"CE_CustomElement\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"maxValue\": 255,\n                \"guiPosition\": \"tab:Information:0;field:2\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            }\n        ],\n        \"action\": [],\n        \"uniqueConstraint\": []\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/cet/createOrUpdate",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"cet",
+								"createOrUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get CET CustomElement",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/CustomElement",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"entity",
+								"CustomElement"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "create CET WebApplication Copy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/Application",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"investigation-core",
+										"api",
+										"rest",
+										"entityCustomization",
+										"entity",
+										"Application"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 25 Apr 2019 14:55:55 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-store, must-revalidate, max-age=0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Undertow/1"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkY2IzZTFjOC1lMWI0LTRlMDUtOTQ0Yy1lMmEyNTg0OTQ0MGEifQ.eyJjaWQiOiJtZXZlby13ZWIiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwczovL292aC1pbnRlZ3JhdGlvbi53ZWJkcm9uZS5mcjoyMDk2L2ludmVzdGlnYXRpb24tY29yZS9hcGkvcmVzdC9lbnRpdHlDdXN0b21pemF0aW9uL2VudGl0eS9BcHBsaWNhdGlvbiIsImFjdCI6IkFVVEhFTlRJQ0FURSIsIm5vdGVzIjp7InNjb3BlIjoib3BlbmlkIiwiaXNzIjoiaHR0cHM6Ly9vdmgtaW50ZWdyYXRpb24ud2ViZHJvbmUuZnI6MjA5Ni9hdXRoL3JlYWxtcy9pbnZlc3RpZ2F0aW9uLWNvcmUiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsImNvZGVfY2hhbGxlbmdlX21ldGhvZCI6InBsYWluIiwicmVkaXJlY3RfdXJpIjoiaHR0cHM6Ly9vdmgtaW50ZWdyYXRpb24ud2ViZHJvbmUuZnI6MjA5Ni9pbnZlc3RpZ2F0aW9uLWNvcmUvYXBpL3Jlc3QvZW50aXR5Q3VzdG9taXphdGlvbi9lbnRpdHkvQXBwbGljYXRpb24iLCJzdGF0ZSI6IjcwNWI1ODc3LWY0NzItNDllNy1hYTRmLWQ5NWFjYTdjMDU2YiIsImNsaWVudF9yZXF1ZXN0X3BhcmFtX2xvZ2luIjoidHJ1ZSJ9fQ.8R7iXpSXEH9IfbE4DoigKX-jo8K2okCrxOdqt7Pt_gk; Version=1; Path=/auth/realms/investigation-core/; Secure; HttpOnly"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';"
+								},
+								{
+									"key": "X-Robots-Tag",
+									"value": "none"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=31536000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Content-Language",
+									"value": "en"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\""
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "4cd129264ee93bed-CDG"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"body": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" class=\"login-pf\">\n    <head>\n        <meta charset=\"utf-8\">\n        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"robots\" content=\"noindex, nofollow\">\n        <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n        <title>        Log in to investigation-core\n</title>\n        <link rel=\"icon\" href=\"/auth/resources/4.8.3.final/login/webdrone/img/favicon.png\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/lib/patternfly/css/patternfly.css\" rel=\"stylesheet\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/lib/zocial/zocial.css\" rel=\"stylesheet\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/css/login.css\" rel=\"stylesheet\" />\n    </head>\n    <body class=\"\">\n        <div class=\"container-fluid login-container\">\n            <div class=\"row\">\n                <div class=\"col-md-12 container-form login-form\">\n                    <div class=\"container-fluid login-container\">\n                        <div class=\"row\">\n                            <div class=\"col-md-12\">\n                                <div class=\"form_header text-center\">\n                                    <h2>AUTHENTICATION</h2>\n                                    <p>Please enter your username and password to access your account.</p>\n                                </div>\n                                <form id=\"kc-form-login\" class=\"login-form\" action=\"https://ovh-integration.webdrone.fr:2096/auth/realms/investigation-core/login-actions/authenticate?session_code=0xPLnTh2l-LLSBXBEsszhuCCjaqLJ1D33vGK8qGDHgY&amp;execution=4231790b-48e0-43ed-9ce4-fcfab7adcbd1&amp;client_id=meveo-web&amp;tab_id=QJvpa__wOSU\" method=\"post\">\n                                    <div class=\"form-group col-md-12\">\n                                        <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding\">\n                                            <label for=\"username\" class=\"control-label\">Username or email</label>\n                                        </div>\n                                        <div class=\"col-xs-12 col-sm-12 col-md-8 col-lg-8 no-padding\">\n                                            <input id=\"username\" class=\"form-control col-md-10\" name=\"username\" value=\"\" type=\"text\" autofocus autocomplete=\"off\" />\n                                        </div>\n                                    </div>\n                                    <div class=\"form-group col-md-12\">\n                                        <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding\">\n                                            <label for=\"password\" class=\"control-label\">Password</label>\n                                        </div>\n                                        <div class=\"col-xs-12 col-sm-12 col-md-8 col-lg-8 no-padding\">\n                                            <input id=\"password\" class=\"form-control col-md-10\" name=\"password\" type=\"password\" autocomplete=\"off\" />\n                                        </div>\n                                    </div>\n                                    <div class=\"form-group col-md-12\">\n                                        <div id=\"kc-form-options\" class=\"col-xs-7 no-padding\">\n                                            <div class=\"\">\n                        </div>\n                                        </div>\n                                        <div id=\"kc-form-buttons\" class=\"col-xs-5 submit no-padding\">\n                                            <div class=\"\">\n                                                <input class=\"btn pull-right btn-primary btn-lg\" name=\"login\" id=\"kc-login\" type=\"submit\" value=\"Log in\"/>\n                                            </div>\n                                        </div>\n                                    </div>\n                                </form>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <span class=\"footer-text\">2018&copy; Webdrone</span>\n            <span class=\"footer-logo\"></span>\n        </div>\n    </body>\n</html>"
+						}
+					]
+				},
+				{
+					"name": "Create ApplicationWebPage",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"code\": \"ApplicationWebPage\",\n        \"labels\": [],\n        \"storeAsTable\": false,\n        \"name\": \"Application Web Page\",\n        \"description\": \"Meveo generated web page\",\n        \"primitiveEntity\": false,\n        \"field\": [\n            {\n                \"code\": \"body\",\n                \"description\": \"HTML Body\",\n                \"fieldType\": \"TEXT_AREA\",\n                \"accountLevel\": \"CE_ApplicationWebPage\",\n                \"appliesTo\": \"CE_ApplicationWebPage\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Information:3;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            },\n             {\n                \"code\": \"stylesheets\",\n                \"description\": \"CSS stylesheets\",\n                \"fieldType\": \"CHILD_ENTITY\",\n                \"accountLevel\": \"CE_ApplicationWebPage\",\n                \"appliesTo\": \"CE_ApplicationWebPage\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"LIST\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"entityClazz\": \"org.meveo.model.customEntities.CustomEntityTemplate - CSSStyleSheet\",\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Imports:1;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"fieldCode\": [\n                    \"code\"\n                ]\n            },\n            {\n                \"code\": \"customElements\",\n                \"description\": \"Custom components\",\n                \"fieldType\": \"ENTITY\",\n                \"accountLevel\": \"CE_ApplicationWebPage\",\n                \"appliesTo\": \"CE_ApplicationWebPage\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"LIST\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"entityClazz\": \"org.meveo.model.customEntities.CustomEntityTemplate - CustomElement\",\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Imports:0;field:1\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"relationshipName\": \"elements\",\n                \"identifier\": false\n            }\n        ],\n        \"action\": [],\n        \"uniqueConstraint\": []\n    }"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/cet/createOrUpdate",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"cet",
+								"createOrUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get CET ApplicationWebPage",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/ApplicationWebPage",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"entity",
+								"ApplicationWebPage"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "create CET WebApplication Copy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/Application",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"investigation-core",
+										"api",
+										"rest",
+										"entityCustomization",
+										"entity",
+										"Application"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 25 Apr 2019 14:55:55 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-store, must-revalidate, max-age=0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Undertow/1"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkY2IzZTFjOC1lMWI0LTRlMDUtOTQ0Yy1lMmEyNTg0OTQ0MGEifQ.eyJjaWQiOiJtZXZlby13ZWIiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwczovL292aC1pbnRlZ3JhdGlvbi53ZWJkcm9uZS5mcjoyMDk2L2ludmVzdGlnYXRpb24tY29yZS9hcGkvcmVzdC9lbnRpdHlDdXN0b21pemF0aW9uL2VudGl0eS9BcHBsaWNhdGlvbiIsImFjdCI6IkFVVEhFTlRJQ0FURSIsIm5vdGVzIjp7InNjb3BlIjoib3BlbmlkIiwiaXNzIjoiaHR0cHM6Ly9vdmgtaW50ZWdyYXRpb24ud2ViZHJvbmUuZnI6MjA5Ni9hdXRoL3JlYWxtcy9pbnZlc3RpZ2F0aW9uLWNvcmUiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsImNvZGVfY2hhbGxlbmdlX21ldGhvZCI6InBsYWluIiwicmVkaXJlY3RfdXJpIjoiaHR0cHM6Ly9vdmgtaW50ZWdyYXRpb24ud2ViZHJvbmUuZnI6MjA5Ni9pbnZlc3RpZ2F0aW9uLWNvcmUvYXBpL3Jlc3QvZW50aXR5Q3VzdG9taXphdGlvbi9lbnRpdHkvQXBwbGljYXRpb24iLCJzdGF0ZSI6IjcwNWI1ODc3LWY0NzItNDllNy1hYTRmLWQ5NWFjYTdjMDU2YiIsImNsaWVudF9yZXF1ZXN0X3BhcmFtX2xvZ2luIjoidHJ1ZSJ9fQ.8R7iXpSXEH9IfbE4DoigKX-jo8K2okCrxOdqt7Pt_gk; Version=1; Path=/auth/realms/investigation-core/; Secure; HttpOnly"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';"
+								},
+								{
+									"key": "X-Robots-Tag",
+									"value": "none"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=31536000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Content-Language",
+									"value": "en"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\""
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "4cd129264ee93bed-CDG"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"body": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" class=\"login-pf\">\n    <head>\n        <meta charset=\"utf-8\">\n        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"robots\" content=\"noindex, nofollow\">\n        <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n        <title>        Log in to investigation-core\n</title>\n        <link rel=\"icon\" href=\"/auth/resources/4.8.3.final/login/webdrone/img/favicon.png\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/lib/patternfly/css/patternfly.css\" rel=\"stylesheet\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/lib/zocial/zocial.css\" rel=\"stylesheet\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/css/login.css\" rel=\"stylesheet\" />\n    </head>\n    <body class=\"\">\n        <div class=\"container-fluid login-container\">\n            <div class=\"row\">\n                <div class=\"col-md-12 container-form login-form\">\n                    <div class=\"container-fluid login-container\">\n                        <div class=\"row\">\n                            <div class=\"col-md-12\">\n                                <div class=\"form_header text-center\">\n                                    <h2>AUTHENTICATION</h2>\n                                    <p>Please enter your username and password to access your account.</p>\n                                </div>\n                                <form id=\"kc-form-login\" class=\"login-form\" action=\"https://ovh-integration.webdrone.fr:2096/auth/realms/investigation-core/login-actions/authenticate?session_code=0xPLnTh2l-LLSBXBEsszhuCCjaqLJ1D33vGK8qGDHgY&amp;execution=4231790b-48e0-43ed-9ce4-fcfab7adcbd1&amp;client_id=meveo-web&amp;tab_id=QJvpa__wOSU\" method=\"post\">\n                                    <div class=\"form-group col-md-12\">\n                                        <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding\">\n                                            <label for=\"username\" class=\"control-label\">Username or email</label>\n                                        </div>\n                                        <div class=\"col-xs-12 col-sm-12 col-md-8 col-lg-8 no-padding\">\n                                            <input id=\"username\" class=\"form-control col-md-10\" name=\"username\" value=\"\" type=\"text\" autofocus autocomplete=\"off\" />\n                                        </div>\n                                    </div>\n                                    <div class=\"form-group col-md-12\">\n                                        <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding\">\n                                            <label for=\"password\" class=\"control-label\">Password</label>\n                                        </div>\n                                        <div class=\"col-xs-12 col-sm-12 col-md-8 col-lg-8 no-padding\">\n                                            <input id=\"password\" class=\"form-control col-md-10\" name=\"password\" type=\"password\" autocomplete=\"off\" />\n                                        </div>\n                                    </div>\n                                    <div class=\"form-group col-md-12\">\n                                        <div id=\"kc-form-options\" class=\"col-xs-7 no-padding\">\n                                            <div class=\"\">\n                        </div>\n                                        </div>\n                                        <div id=\"kc-form-buttons\" class=\"col-xs-5 submit no-padding\">\n                                            <div class=\"\">\n                                                <input class=\"btn pull-right btn-primary btn-lg\" name=\"login\" id=\"kc-login\" type=\"submit\" value=\"Log in\"/>\n                                            </div>\n                                        </div>\n                                    </div>\n                                </form>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <span class=\"footer-text\">2018&copy; Webdrone</span>\n            <span class=\"footer-logo\"></span>\n        </div>\n    </body>\n</html>"
+						}
+					]
+				},
+				{
+					"name": "Create Application CET",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"code\": \"Application\",\n        \"labels\": [],\n        \"storeAsTable\": false,\n        \"name\": \"Application\",\n        \"description\": \"Meveo generated web application\",\n        \"customEntityCategoryCode\": \"Technical\",\n        \"primitiveEntity\": false,\n        \"field\": [\n            {\n                \"code\": \"creationDate\",\n                \"description\": \"Creation date\",\n                \"fieldType\": \"DATE\",\n                \"accountLevel\": \"CE_Application\",\n                \"appliesTo\": \"CE_Application\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": false,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Information:0;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": [\n                    \"SQL\",\n                    \"NEO4J\"\n                ]\n            },\n            {\n                \"code\": \"customElements\",\n                \"description\": \"Custom components\",\n                \"fieldType\": \"ENTITY\",\n                \"accountLevel\": \"CE_Application\",\n                \"appliesTo\": \"CE_Application\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"LIST\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"entityClazz\": \"org.meveo.model.customEntities.CustomEntityTemplate - CustomElement\",\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Imports:1;field:1\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"relationshipName\": \"elements\",\n                \"identifier\": false\n            },\n            {\n                \"code\": \"properties\",\n                \"description\": \"properties\",\n                \"fieldType\": \"STRING\",\n                \"accountLevel\": \"CE_Application\",\n                \"appliesTo\": \"CE_Application\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"MAP\",\n                \"valueRequired\": true,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"maxValue\": 255,\n                \"guiPosition\": \"tab:Properties:2;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"mapKeyType\": \"STRING\"\n            },\n            {\n                \"code\": \"stylesheets\",\n                \"description\": \"CSS stylesheets\",\n                \"fieldType\": \"CHILD_ENTITY\",\n                \"accountLevel\": \"CE_Application\",\n                \"appliesTo\": \"CE_Application\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"LIST\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"entityClazz\": \"org.meveo.model.customEntities.CustomEntityTemplate - CSSStyleSheet\",\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Imports:1;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": [\n                    \"SQL\",\n                    \"NEO4J\"\n                ],\n                \"fieldCode\": [\n                    \"code\"\n                ]\n            },\n            {\n                \"code\": \"webPages\",\n                \"description\": \"Web pages\",\n                \"fieldType\": \"ENTITY\",\n                \"accountLevel\": \"CE_Application\",\n                \"appliesTo\": \"CE_Application\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"MAP\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"entityClazz\": \"org.meveo.model.customEntities.CustomEntityTemplate - ApplicationWebPage\",\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Imports:1;field:2\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"relationshipName\": \"webpages\",\n                \"identifier\": false,\n                \"mapKeyType\": \"STRING\"\n            }\n        ],\n        \"action\": [],\n        \"uniqueConstraint\": []\n    }"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/cet/createOrUpdate",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"cet",
+								"createOrUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get CET Application",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/Application",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"entity",
+								"Application"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "create CET WebApplication Copy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/Application",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"investigation-core",
+										"api",
+										"rest",
+										"entityCustomization",
+										"entity",
+										"Application"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 25 Apr 2019 14:55:55 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-store, must-revalidate, max-age=0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Undertow/1"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkY2IzZTFjOC1lMWI0LTRlMDUtOTQ0Yy1lMmEyNTg0OTQ0MGEifQ.eyJjaWQiOiJtZXZlby13ZWIiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwczovL292aC1pbnRlZ3JhdGlvbi53ZWJkcm9uZS5mcjoyMDk2L2ludmVzdGlnYXRpb24tY29yZS9hcGkvcmVzdC9lbnRpdHlDdXN0b21pemF0aW9uL2VudGl0eS9BcHBsaWNhdGlvbiIsImFjdCI6IkFVVEhFTlRJQ0FURSIsIm5vdGVzIjp7InNjb3BlIjoib3BlbmlkIiwiaXNzIjoiaHR0cHM6Ly9vdmgtaW50ZWdyYXRpb24ud2ViZHJvbmUuZnI6MjA5Ni9hdXRoL3JlYWxtcy9pbnZlc3RpZ2F0aW9uLWNvcmUiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsImNvZGVfY2hhbGxlbmdlX21ldGhvZCI6InBsYWluIiwicmVkaXJlY3RfdXJpIjoiaHR0cHM6Ly9vdmgtaW50ZWdyYXRpb24ud2ViZHJvbmUuZnI6MjA5Ni9pbnZlc3RpZ2F0aW9uLWNvcmUvYXBpL3Jlc3QvZW50aXR5Q3VzdG9taXphdGlvbi9lbnRpdHkvQXBwbGljYXRpb24iLCJzdGF0ZSI6IjcwNWI1ODc3LWY0NzItNDllNy1hYTRmLWQ5NWFjYTdjMDU2YiIsImNsaWVudF9yZXF1ZXN0X3BhcmFtX2xvZ2luIjoidHJ1ZSJ9fQ.8R7iXpSXEH9IfbE4DoigKX-jo8K2okCrxOdqt7Pt_gk; Version=1; Path=/auth/realms/investigation-core/; Secure; HttpOnly"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';"
+								},
+								{
+									"key": "X-Robots-Tag",
+									"value": "none"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=31536000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Content-Language",
+									"value": "en"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\""
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "4cd129264ee93bed-CDG"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"body": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" class=\"login-pf\">\n    <head>\n        <meta charset=\"utf-8\">\n        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"robots\" content=\"noindex, nofollow\">\n        <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n        <title>        Log in to investigation-core\n</title>\n        <link rel=\"icon\" href=\"/auth/resources/4.8.3.final/login/webdrone/img/favicon.png\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/lib/patternfly/css/patternfly.css\" rel=\"stylesheet\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/lib/zocial/zocial.css\" rel=\"stylesheet\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/css/login.css\" rel=\"stylesheet\" />\n    </head>\n    <body class=\"\">\n        <div class=\"container-fluid login-container\">\n            <div class=\"row\">\n                <div class=\"col-md-12 container-form login-form\">\n                    <div class=\"container-fluid login-container\">\n                        <div class=\"row\">\n                            <div class=\"col-md-12\">\n                                <div class=\"form_header text-center\">\n                                    <h2>AUTHENTICATION</h2>\n                                    <p>Please enter your username and password to access your account.</p>\n                                </div>\n                                <form id=\"kc-form-login\" class=\"login-form\" action=\"https://ovh-integration.webdrone.fr:2096/auth/realms/investigation-core/login-actions/authenticate?session_code=0xPLnTh2l-LLSBXBEsszhuCCjaqLJ1D33vGK8qGDHgY&amp;execution=4231790b-48e0-43ed-9ce4-fcfab7adcbd1&amp;client_id=meveo-web&amp;tab_id=QJvpa__wOSU\" method=\"post\">\n                                    <div class=\"form-group col-md-12\">\n                                        <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding\">\n                                            <label for=\"username\" class=\"control-label\">Username or email</label>\n                                        </div>\n                                        <div class=\"col-xs-12 col-sm-12 col-md-8 col-lg-8 no-padding\">\n                                            <input id=\"username\" class=\"form-control col-md-10\" name=\"username\" value=\"\" type=\"text\" autofocus autocomplete=\"off\" />\n                                        </div>\n                                    </div>\n                                    <div class=\"form-group col-md-12\">\n                                        <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding\">\n                                            <label for=\"password\" class=\"control-label\">Password</label>\n                                        </div>\n                                        <div class=\"col-xs-12 col-sm-12 col-md-8 col-lg-8 no-padding\">\n                                            <input id=\"password\" class=\"form-control col-md-10\" name=\"password\" type=\"password\" autocomplete=\"off\" />\n                                        </div>\n                                    </div>\n                                    <div class=\"form-group col-md-12\">\n                                        <div id=\"kc-form-options\" class=\"col-xs-7 no-padding\">\n                                            <div class=\"\">\n                        </div>\n                                        </div>\n                                        <div id=\"kc-form-buttons\" class=\"col-xs-5 submit no-padding\">\n                                            <div class=\"\">\n                                                <input class=\"btn pull-right btn-primary btn-lg\" name=\"login\" id=\"kc-login\" type=\"submit\" value=\"Log in\"/>\n                                            </div>\n                                        </div>\n                                    </div>\n                                </form>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <span class=\"footer-text\">2018&copy; Webdrone</span>\n            <span class=\"footer-logo\"></span>\n        </div>\n    </body>\n</html>"
+						}
+					]
+				},
+				{
+					"name": "Create CustomElement CET",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"code\": \"CustomElement\",\n        \"labels\": [],\n        \"storeAsTable\": false,\n        \"name\": \"HTML Custom element\",\n        \"description\": \"Meveo generated custom HTML element\",\n        \"primitiveEntity\": false,\n        \"field\": [\n            {\n                \"code\": \"type\",\n                \"description\": \"script media type\",\n                \"fieldType\": \"LIST\",\n                \"accountLevel\": \"CE_CustomElement\",\n                \"appliesTo\": \"CE_CustomElement\",\n                \"defaultValue\": \"module\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"listValues\": {\n                    \"application/javascript\": \"JS script\",\n                    \"module\": \"ES module\"\n                },\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Information:0;field:2\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            },\n            {\n                \"code\": \"url\",\n                \"description\": \"url of distant script\",\n                \"fieldType\": \"STRING\",\n                \"accountLevel\": \"CE_CustomElement\",\n                \"appliesTo\": \"CE_CustomElement\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"maxValue\": 255,\n                \"guiPosition\": \"tab:Information:0;field:3\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            },\n           \n             {\n                \"code\": \"style\",\n                \"description\": \"CSS style\",\n                \"fieldType\": \"CHILD_ENTITY\",\n                \"accountLevel\": \"CE_CustomElement\",\n                \"appliesTo\": \"CE_CustomElement\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"LIST\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"entityClazz\": \"org.meveo.model.customEntities.CustomEntityTemplate - CSSStyleSheet\",\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Information:0;field:4\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"fieldCode\": [\n                    \"code\"\n                ]\n            },\n            {\n                \"code\": \"observedAttributes\",\n                \"description\": \"Observed attributes\",\n                \"fieldType\": \"STRING\",\n                \"accountLevel\": \"CE_CustomElement\",\n                \"appliesTo\": \"CE_CustomElement\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"MAP\",\n                \"valueRequired\": true,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"maxValue\": 255,\n                \"guiPosition\": \"tab:Attributes:1;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            },\n            {\n                \"code\": \"template\",\n                \"description\": \"HTML Template\",\n                \"fieldType\": \"TEXT_AREA\",\n                \"accountLevel\": \"CE_CustomElement\",\n                \"appliesTo\": \"CE_CustomElement\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Template:2;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false\n            }\n        ],\n        \"action\": [],\n        \"uniqueConstraint\": []\n    }"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/cet/createOrUpdate",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"cet",
+								"createOrUpdate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Router",
+			"item": [
+				{
+					"name": "Create Router script",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\" : \"org.manaty.router.AppRouter\",\n    \"description\": \"Serve Meveo Web Application\",\n     \"type\": \"JAVA\",\n        \"script\": \"/*\\r\\n * (C) Copyright 2018-2019 Manaty SARL (https://manaty.net) and contributors.\\r\\n *\\r\\n * This program is free software: you can redistribute it and/or modify it under the terms of the\\r\\n * GNU Affero General Public License as published by the Free Software Foundation, either version 3\\r\\n * of the License, or (at your option) any later version.\\r\\n *\\r\\n * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without\\r\\n * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. This program is\\r\\n * not suitable for any direct or indirect application in MILITARY industry See the GNU Affero\\r\\n * General Public License for more details.\\r\\n *\\r\\n * You should have received a copy of the GNU Affero General Public License along with this program.\\r\\n * If not, see <http://www.gnu.org/licenses/>.\\r\\n */\\r\\n\\r\\npackage org.manaty.router;\\r\\n\\r\\n\\r\\nimport org.meveo.service.custom.CustomEntityInstanceService;\\r\\nimport org.meveo.model.customEntities.CustomEntityInstance;\\r\\nimport org.meveo.service.script.Script;\\r\\nimport org.meveo.model.crm.EntityReferenceWrapper;\\r\\nimport org.meveo.api.rest.technicalservice.impl.EndpointRequest;\\r\\n\\r\\nimport java.util.Map;\\r\\nimport java.util.List;\\r\\n\\r\\npublic class AppRouter extends Script {\\r\\n\\r\\n    private String appCode;\\r\\n    private String directory;\\r\\n    private String filename;\\r\\n\\r\\n    private String result;\\r\\n\\r\\n    CustomEntityInstanceService customEntityInstanceService;\\r\\n\\r\\n    public AppRouter(){\\r\\n        customEntityInstanceService=(CustomEntityInstanceService)getServiceInterface(\\\"CustomEntityInstanceService\\\");\\r\\n    }\\r\\n\\r\\n    @Override\\r\\n    public void execute(Map<String, Object> methodContext) {\\r\\n        EndpointRequest request=(org.meveo.api.rest.technicalservice.impl.EndpointRequest)methodContext.get(\\\"request\\\");\\r\\n        String remainingPath=request.getRemainingPath();\\r\\n        CustomEntityInstance app = customEntityInstanceService.findByCodeByCet(\\\"Application\\\", this.appCode);\\r\\n        if(remainingPath.equals(\\\"/\\\"+appCode)){\\r\\n          result=\\\"<html><head><meta http-equiv=\\\\\\\"refresh\\\\\\\" content=\\\\\\\"0; URL=\\\"+this.appCode+\\\"/index.html\\\\\\\"></head></html>\\\";\\r\\n        } else if(remainingPath.endsWith(\\\".html\\\")){\\r\\n            result=HtmlApplicationSerializer.getHtml(app,remainingPath,customEntityInstanceService);\\r\\n        } else if(remainingPath.startsWith(\\\"/elements/\\\")){\\r\\n            result=\\\"retrieve element:\\\"+remainingPath.substring(10);\\r\\n        } else {\\r\\n            //result=HtmlApplicationSerializer.getIndexHtml(app,customEntityInstanceService)+\\\"appCode:\\\"+appCode+\\\",directory:\\\"+directory+\\\",filename:\\\"+filename+\\\" cf:\\\"+app.getCfValues();\\r\\n            result = \\\"remainingPath:\\\"+remainingPath;\\r\\n        }\\r\\n    }\\r\\n\\r\\n    public void setAppCode(String appCode){\\r\\n        this.appCode = appCode;\\r\\n    }\\r\\n\\r\\n    public void setDirectory(String directory){\\r\\n        this.directory = directory;\\r\\n    }\\r\\n\\r\\n    public void setFilename(String filename){\\r\\n        this.filename = filename;\\r\\n    }\\r\\n\\r\\n    public String getResult(){\\r\\n        return result;\\r\\n    }\\r\\n\\r\\n}\\r\\n\\r\\nclass HtmlApplicationSerializer {\\r\\n    static final String docType=\\\"<!DOCTYPE html>\\\";\\r\\n    static final String ln=System.lineSeparator();\\r\\n    static CustomEntityInstanceService customEntityInstanceService;\\r\\n\\r\\n    static String getHtml(CustomEntityInstance app,String remainingPath,CustomEntityInstanceService ceis){\\r\\n        customEntityInstanceService=ceis;\\r\\n      \\r\\n        Map<String,EntityReferenceWrapper> webpages = (Map<String,EntityReferenceWrapper>)app.getCfValues().getCfValue(\\\"webPages\\\").getMapValue();\\r\\n      \\tEntityReferenceWrapper webpage=null;\\r\\n      \\tif(webpages!=null && webpages.containsKey(remainingPath)){\\r\\n          webpage=webpages.get(remainingPath);\\r\\n      \\t}\\r\\n      \\tif(webpage==null){\\r\\n          return \\\"<html><body><h1>Page \\\"+remainingPath+\\\" not found among \\\"+app.getCfValues().getValues()+\\\"</h1></body></html>\\\";\\r\\n        }\\r\\n      \\r\\n        StringBuffer result = new StringBuffer();\\r\\n        result.append(docType).append(ln);\\r\\n        result.append(\\\"<html>\\\").append(ln);\\r\\n        result.append(\\\"<head>\\\").append(ln);\\r\\n        if(app.getCfValues().getCfValue(\\\"stylesheets\\\")!=null){\\r\\n        \\tList<EntityReferenceWrapper> stylesheets = (List<EntityReferenceWrapper>)app.getCfValues().getCfValue(\\\"stylesheets\\\").getListValue();\\r\\n        \\tif(stylesheets!=null && stylesheets.size()>0){\\r\\n            \\tresult.append(getStyleSheets(stylesheets));\\r\\n        \\t}        \\r\\n        }\\r\\n      \\tresult.append(getWebpageHtml(webpage));\\r\\n        \\r\\n        result.append(\\\"</html>\\\").append(ln);\\r\\n        return result.toString();\\r\\n    }\\r\\n  \\r\\n    static String getWebpageHtml(EntityReferenceWrapper webpageWrapper){\\r\\n        StringBuffer result = new StringBuffer();\\r\\n        CustomEntityInstance webpage = customEntityInstanceService.findByCodeByCet(\\\"ApplicationWebPage\\\",webpageWrapper.getCode());\\r\\n  \\t\\tresult.append(\\\"<title>\\\").append(webpage.getDescription()).append(\\\"</title>\\\");\\r\\n      \\tif(webpage.getCfValues().getCfValue(\\\"stylesheets\\\")!=null){\\r\\n        \\tList<EntityReferenceWrapper> stylesheets = (List<EntityReferenceWrapper>)webpage.getCfValues().getCfValue(\\\"stylesheets\\\").getListValue();\\r\\n        \\tif(stylesheets!=null && stylesheets.size()>0){\\r\\n            \\tresult.append(getStyleSheets(stylesheets));\\r\\n        \\t}        \\r\\n    \\t}\\r\\n        result.append(\\\"</head>\\\").append(ln);\\r\\n     \\r\\n        if(webpage.getCfValues().getCfValue(\\\"body\\\")!=null){\\r\\n            result.append(\\\"<body>\\\").append(ln).append(webpage.getCfValues().getCfValue(\\\"body\\\").getStringValue()).append(\\\"</body>\\\").append(ln);\\r\\n        }\\r\\n        return result.toString();\\r\\n    }\\r\\n\\r\\n    static String getStyleSheets(List<EntityReferenceWrapper> stylesheets){\\r\\n        StringBuffer result = new StringBuffer();\\r\\n        for(EntityReferenceWrapper stylesheetWrapper:stylesheets){\\r\\n            CustomEntityInstance stylesheet = customEntityInstanceService.findByCodeByCet(\\\"CSSStyleSheet\\\",stylesheetWrapper.getCode());\\r\\n            if(stylesheet.getCfValues().getCfValue(\\\"externalURL\\\")!=null){\\r\\n                result.append(\\\"<link rel=\\\\\\\"stylesheet\\\\\\\" href=\\\\\\\"\\\"+stylesheet.getCfValues().getCfValue(\\\"externalURL\\\").getStringValue()+\\\"\\\\\\\">\\\").append(ln);\\r\\n            } else {\\r\\n                result.append(\\\"<style>\\\"+stylesheet.getCfValues().getCfValue(\\\"content\\\").getStringValue()+\\\"</style>\\\").append(ln);\\r\\n            }\\r\\n        }\\r\\n        return result.toString();\\r\\n\\r\\n    }\\r\\n}\",\n        \"executionRoles\": [],\n        \"sourcingRoles\": []\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/scriptInstance/createOrUpdate",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"scriptInstance",
+								"createOrUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Router Script",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/scriptInstance/?scriptInstanceCode=org.manaty.router.AppRouter",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"scriptInstance",
+								""
+							],
+							"query": [
+								{
+									"key": "scriptInstanceCode",
+									"value": "org.manaty.router.AppRouter"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create router script endpoint",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"code\": \"router\",\n        \"serviceCode\": \"org.manaty.router.AppRouter\",\n        \"synchronous\": true,\n        \"method\": \"GET\",\n        \"parameterMappings\": [],\n        \"pathParameters\": [\n            \"appCode\"\n        ],\n        \"returnedVariableName\": \"result\",\n        \"serializeResult\": false\n    }"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/endpoint",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"endpoint"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get router script endpoint",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"serviceCode\": \"org.manaty.router.AppRouter\",\n    \"code\": \"router\",\n    \"synchronous\": true,\n    \"method\": \"GET\",   \n    \"returnedVariableName\": \"result\",\n    \"pathParameters\": [\"appCode\"],\n    \"parameterMappings\" : []\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/endpoint/",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"endpoint",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "call router endpoint",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "af2f3399-06b3-42ca-91d7-8e55ecad649b",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Budget-Max-Value",
+								"type": "text",
+								"value": "32"
+							},
+							{
+								"key": "Budget-Unit",
+								"type": "text",
+								"value": "EUR"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/rest/router/agentInvestigation/index.html",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"rest",
+								"router",
+								"agentInvestigation",
+								"index.html"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "deletions",
+			"item": [
+				{
+					"name": "delete entity",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/ReactComponent",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"entity",
+								"ReactComponent"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "create CET WebApplication Copy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/Application",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{hostname}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"investigation-core",
+										"api",
+										"rest",
+										"entityCustomization",
+										"entity",
+										"Application"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 25 Apr 2019 14:55:55 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-store, must-revalidate, max-age=0"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Undertow/1"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkY2IzZTFjOC1lMWI0LTRlMDUtOTQ0Yy1lMmEyNTg0OTQ0MGEifQ.eyJjaWQiOiJtZXZlby13ZWIiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwczovL292aC1pbnRlZ3JhdGlvbi53ZWJkcm9uZS5mcjoyMDk2L2ludmVzdGlnYXRpb24tY29yZS9hcGkvcmVzdC9lbnRpdHlDdXN0b21pemF0aW9uL2VudGl0eS9BcHBsaWNhdGlvbiIsImFjdCI6IkFVVEhFTlRJQ0FURSIsIm5vdGVzIjp7InNjb3BlIjoib3BlbmlkIiwiaXNzIjoiaHR0cHM6Ly9vdmgtaW50ZWdyYXRpb24ud2ViZHJvbmUuZnI6MjA5Ni9hdXRoL3JlYWxtcy9pbnZlc3RpZ2F0aW9uLWNvcmUiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsImNvZGVfY2hhbGxlbmdlX21ldGhvZCI6InBsYWluIiwicmVkaXJlY3RfdXJpIjoiaHR0cHM6Ly9vdmgtaW50ZWdyYXRpb24ud2ViZHJvbmUuZnI6MjA5Ni9pbnZlc3RpZ2F0aW9uLWNvcmUvYXBpL3Jlc3QvZW50aXR5Q3VzdG9taXphdGlvbi9lbnRpdHkvQXBwbGljYXRpb24iLCJzdGF0ZSI6IjcwNWI1ODc3LWY0NzItNDllNy1hYTRmLWQ5NWFjYTdjMDU2YiIsImNsaWVudF9yZXF1ZXN0X3BhcmFtX2xvZ2luIjoidHJ1ZSJ9fQ.8R7iXpSXEH9IfbE4DoigKX-jo8K2okCrxOdqt7Pt_gk; Version=1; Path=/auth/realms/investigation-core/; Secure; HttpOnly"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "Content-Security-Policy",
+									"value": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';"
+								},
+								{
+									"key": "X-Robots-Tag",
+									"value": "none"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=31536000; includeSubDomains"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Content-Language",
+									"value": "en"
+								},
+								{
+									"key": "Expect-CT",
+									"value": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\""
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "4cd129264ee93bed-CDG"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"body": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" class=\"login-pf\">\n    <head>\n        <meta charset=\"utf-8\">\n        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n        <meta name=\"robots\" content=\"noindex, nofollow\">\n        <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n        <title>        Log in to investigation-core\n</title>\n        <link rel=\"icon\" href=\"/auth/resources/4.8.3.final/login/webdrone/img/favicon.png\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/lib/patternfly/css/patternfly.css\" rel=\"stylesheet\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/lib/zocial/zocial.css\" rel=\"stylesheet\" />\n        <link href=\"/auth/resources/4.8.3.final/login/webdrone/css/login.css\" rel=\"stylesheet\" />\n    </head>\n    <body class=\"\">\n        <div class=\"container-fluid login-container\">\n            <div class=\"row\">\n                <div class=\"col-md-12 container-form login-form\">\n                    <div class=\"container-fluid login-container\">\n                        <div class=\"row\">\n                            <div class=\"col-md-12\">\n                                <div class=\"form_header text-center\">\n                                    <h2>AUTHENTICATION</h2>\n                                    <p>Please enter your username and password to access your account.</p>\n                                </div>\n                                <form id=\"kc-form-login\" class=\"login-form\" action=\"https://ovh-integration.webdrone.fr:2096/auth/realms/investigation-core/login-actions/authenticate?session_code=0xPLnTh2l-LLSBXBEsszhuCCjaqLJ1D33vGK8qGDHgY&amp;execution=4231790b-48e0-43ed-9ce4-fcfab7adcbd1&amp;client_id=meveo-web&amp;tab_id=QJvpa__wOSU\" method=\"post\">\n                                    <div class=\"form-group col-md-12\">\n                                        <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding\">\n                                            <label for=\"username\" class=\"control-label\">Username or email</label>\n                                        </div>\n                                        <div class=\"col-xs-12 col-sm-12 col-md-8 col-lg-8 no-padding\">\n                                            <input id=\"username\" class=\"form-control col-md-10\" name=\"username\" value=\"\" type=\"text\" autofocus autocomplete=\"off\" />\n                                        </div>\n                                    </div>\n                                    <div class=\"form-group col-md-12\">\n                                        <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding\">\n                                            <label for=\"password\" class=\"control-label\">Password</label>\n                                        </div>\n                                        <div class=\"col-xs-12 col-sm-12 col-md-8 col-lg-8 no-padding\">\n                                            <input id=\"password\" class=\"form-control col-md-10\" name=\"password\" type=\"password\" autocomplete=\"off\" />\n                                        </div>\n                                    </div>\n                                    <div class=\"form-group col-md-12\">\n                                        <div id=\"kc-form-options\" class=\"col-xs-7 no-padding\">\n                                            <div class=\"\">\n                        </div>\n                                        </div>\n                                        <div id=\"kc-form-buttons\" class=\"col-xs-5 submit no-padding\">\n                                            <div class=\"\">\n                                                <input class=\"btn pull-right btn-primary btn-lg\" name=\"login\" id=\"kc-login\" type=\"submit\" value=\"Log in\"/>\n                                            </div>\n                                        </div>\n                                    </div>\n                                </form>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <span class=\"footer-text\">2018&copy; Webdrone</span>\n            <span class=\"footer-logo\"></span>\n        </div>\n    </body>\n</html>"
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "a720f9f8-d193-40c2-81e4-7c3e03e9d59e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "4fd55c37-b43a-4fd5-86e5-03a103c89951",
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Response code should be above 200\", function() {",
+					"   pm.expect(pm.response.code).to.be.oneOf([102,200,201,202,204,403]); ",
+					"});"
+				]
+			}
+		}
+	]
+}
