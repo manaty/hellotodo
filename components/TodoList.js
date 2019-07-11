@@ -6,12 +6,11 @@ import  "./TodoCreator.js";
 class TodoList extends MvElement {
     static get properties() {
         return {
-          name: { attribute: true },
+          name: { type : String , attribute: true },
           title: { type : String },
           todoItems: { type: Array },
-          count:{ attribute: false},
-          storage: { type : String, attribute:true}
-        };
+          count:{  type : Number ,attribute: false }
+        }
     }
 
     static get model(){

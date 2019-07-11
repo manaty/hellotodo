@@ -95,6 +95,90 @@
 			]
 		},
 		{
+			"name": "TodoList entities",
+			"item": [
+				{
+					"name": "Create TodoList CET",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"code\": \"TodoList\",\n        \"name\": \"Todo List\",\n        \"description\": \"simple todo list\",\n        \"customEntityCategoryCode\": \"Business\",\n        \"availableStorages\": [\n            \"SQL\"\n        ],\n        \"sqlStorageConfiguration\": {\n            \"storeAsTable\": false\n        },\n        \"field\": [\n            {\n                \"code\": \"items\",\n                \"description\": \"Items\",\n                \"fieldType\": \"EMBEDDED_ENTITY\",\n                \"accountLevel\": \"CE_TodoList\",\n                \"appliesTo\": \"CE_TodoList\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"LIST\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Todo List:0;field:0\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": [\n                    \"SQL\"\n                ],\n                \"summary\": false,\n                \"tags\": \"value completed\"\n            }\n        ],\n        \"action\": []\n    }"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/cet/createOrUpdate",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"cet",
+								"createOrUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get CET TodoList",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/TodoItem",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"entity",
+								"TodoItem"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Web Application entities",
 			"item": [
 				{
