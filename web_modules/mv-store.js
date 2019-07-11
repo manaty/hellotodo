@@ -1,9 +1,9 @@
 import '../web_modules/jsonata.js';
 
-const fetchModelSchema = async (className) => (await fetch('/model/' + className + '.json')).json()
+const fetchModelSchema = async (className) => (await fetch('./model/' + className + '.json')).json()
 const fetchModelSchemaSync = (className) => {
     var request = new XMLHttpRequest();
-    request.open('GET', '/model/' + className + '.json', false);  // `false` makes the request synchronous
+    request.open('GET', './model/' + className + '.json', false);  // `false` makes the request synchronous
     request.send(null);
     if (request.status === 200) {
         return JSON.parse(request.responseText);
