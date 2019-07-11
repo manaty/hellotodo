@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JSONata test</title>
+    <script src="../web_modules/jsonata.js" type="module"></script>
+    <script>
+        function greeting() {
+            var json = JSON.parse(document.getElementById('json').value);
+            var result = jsonata('$count(todo1.items)').evaluate(json);
+            document.getElementById('greeting').innerHTML = result;
+        }
+    </script>
+</head>
+<body>
+<textarea id="json">{ "todo1": {"items":[{},{},{}]} }</textarea>
+<button onclick="greeting()">Click me</button>
+<p id="greeting"></p>
+</body>
+</html>

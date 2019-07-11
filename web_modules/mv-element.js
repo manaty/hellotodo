@@ -4,10 +4,6 @@ export * from './lit-element.js';
 
 export class MvElement extends LitElement {
 
-    constructor(){
-        super();
-    }
-
     getParentStore(element){
         if(element == undefined){
             return null;
@@ -26,7 +22,6 @@ export class MvElement extends LitElement {
         }
     }
 
-
     connectedCallback() {
         //TODO set parent store to its first parent MvElement's store.
         let parentStore=this.getParentStore(this.parentNode);
@@ -35,10 +30,5 @@ export class MvElement extends LitElement {
         super.connectedCallback();
     }
     
-    attributeChangedCallback(name, oldval, newval) {
-        console.log('attribute change: ', name, newval);
-        super.attributeChangedCallback(name, oldval, newval);
-        //FIXME we cannot use the store before the element has been connected
-        //this.store.updateValue(name, newval,true);
-    }
+
 }

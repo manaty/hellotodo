@@ -9,6 +9,7 @@ class TodoList extends MvElement {
           name: { attribute: true },
           title: { type : String },
           todoItems: { type: Array },
+          count:{ attribute: false},
           storage: { type : String, attribute:true}
         };
     }
@@ -17,10 +18,11 @@ class TodoList extends MvElement {
       return { 
           modelClass:"TodoList",
           storage:"localStorage",
-          mapping:{
-            title:"title",
-            todoItems:"items"
-          }
+          mappings:[
+            {property:"title",value:"title"},
+            {property:"todoItems",value:"items"},
+            {property:"count",jsonataExpression:"$count(items)"},
+          ]
         };
     }
     
@@ -41,6 +43,7 @@ class TodoList extends MvElement {
     constructor(){
         super();
         this.todoItems = [];
+        this.count=0;
     }
 
     todoCreationHandler(e){
@@ -57,7 +60,7 @@ class TodoList extends MvElement {
 
     render(){
       return html`
-      <div class="title">${this.title}</div>
+      <div class="title">${this.title} (${this.count})</div>
       <div class="todo-items">
         ${this.todoItems.map(i => html`<todo-item @todo-delete="${this.todoDeletionHandler}" @todo-complete="${this.todoCompletionHandler}" .value="${i.value}" .completed=${i.completed}></todo-item>`)}
       </div>

@@ -36,9 +36,11 @@ class MtdApp extends MvElement {
       }
       `;
     } 
-  
-    constructor(){
-        super();
+
+    firstUpdated(changedProperties){
+      let counterElmt = this.shadowRoot.querySelector("mtd-counter");
+      this.store.registerElementListener(counterElmt,[{property:"counter",jsonataExpression:"$count(todo1.items)+$count(todo2.items)"}]);
+      this.store.dispatch(null);
     }
 
     render(){
