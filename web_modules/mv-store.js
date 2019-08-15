@@ -9,6 +9,36 @@ const fetchModelSchemaSync = (className) => {
         return JSON.parse(request.responseText);
     }
 }
+
+const fetchCEISync = (repository,className,filter) => {
+    var request = new XMLHttpRequest();
+    request.open('POST', '../../../api/rest/'+repository+'/persistence/'+className+'/list', false);  // `false` makes the request synchronous
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.send(JSON.stringify({'filters':filter}));
+    if (request.status === 200) {
+        let result =JSON.parse(request.responseText);
+        //FIXME ahould do something more reliable
+        if(result.length==1){
+            return result[0];
+        } else {
+            return result;
+        }
+
+    }
+}
+
+const storeCEIAsynch = (repository,name,className,state) => {
+        fetch('../../../api/rest/'+repository+'/persistence', {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+          },
+        body: JSON.stringify([{'name':name,'type':className,'properties':state}])
+    }) .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
+    .catch(error => console.error(error));;
+}
+
 String.prototype.evaluateOnContext = function (params) {
     const names = Object.keys(params);
     const vals = Object.values(params);
@@ -27,65 +57,72 @@ export class MvStore {
      * @param {*} element
      * @param {*} parentStore 
      */
-    constructor(name, element, parentStore = null) {
+    constructor(repository,name, element, parentStore = null) {
+        this.repository=repository;
         this.name = name;
+        this.element = element;
         this.parentStore = parentStore;
         this.listeners = {};
         this.subStores = {};
         this.state = parentStore == null ? {} : parentStore.registerSubStore(this);
-        if (element.constructor.model.mappings) {
-            this.registerElementListener(element, element.constructor.model.mappings, false, this);
+        this.localStore = false;
+        this.serverStore = false;
+        if(this.element.storageModes){
+            this.localStore = this.element.storageModes.includes("local");
+            this.serverStore = this.element.storageModes.includes("server");
         }
-        if (Object.entries(this.state).length === 0) {
+        if (element.constructor.model){
+            this.model = element.constructor.model
+            if(this.model.mappings) {
+            this.registerElementListener(element, element.constructor.model.mappings, false, this);
+            }
+        }
+        if (this.localStore||this.serverStore) {
             if (this.parentStore) { console.log("before initLocalState " + this.name + " : " + (this.state === this.parentStore.state[this.name])) }
-            this.initLocalState(element, element.constructor.model);
+            this.initLocalState();
             if (this.parentStore) { console.log("after initLocalState " + this.name + " : " + (this.state === this.parentStore.state[this.name])) }
         }
         this.dispatch("");
         if (this.parentStore) { console.log("after dispatch " + this.name + " : " + (this.state === this.parentStore.state[this.name])) }
     }
 
-    initLocalState(element, model) {
-        if (model.storage == "localStorage") {
-            this.storage = "localStorage";
-        } else {
-            this.storage = "none";
-        }
-
-        this.loadState();
-        if (model.modelClass) {
-            let schema = fetchModelSchemaSync(model.modelClass);
+    initLocalState() {
+        if (this.model && this.model.modelClass) {
+            let schema = fetchModelSchemaSync(this.model.modelClass);
             if (schema.type == "object") {
                 Object.getOwnPropertyNames(schema.properties).forEach(key => {
                     let value = schema.properties[key];
-                    if (value.type == "array") {
-                        this.state[key] = [];
-                    }
-                    else if (value.type == "object") {
-                        this.state[key] = {};
-                    }
-                    else if (value.type == "string") {
-                        this.state[key] = "";
-                    }
-                    else if (value.type == "number") {
-                        this.state[key] = 0.0;
-                    }
-                    else if (value.type == "integer") {
-                        this.state[key] = 0;
-                    }
-                    else if (value.type == "boolean") {
-                        this.state[key] = false;
-                    }
-                    else if (value.type == "null") {
-                        this.state[key] = null;
-                    }
-                    //set state to initial value from element, typically from attribute
-                    if (element[key] != undefined) {
-                        this.state[key] = element[key]
+                    if(this.state[key]===undefined){
+                        if (value.type == "array") {
+                            this.state[key] = [];
+                        }
+                        else if (value.type == "object") {
+                            this.state[key] = {};
+                        }
+                        else if (value.type == "string") {
+                            this.state[key] = "";
+                        }
+                        else if (value.type == "number") {
+                            this.state[key] = 0.0;
+                        }
+                        else if (value.type == "integer") {
+                            this.state[key] = 0;
+                        }
+                        else if (value.type == "boolean") {
+                            this.state[key] = false;
+                        }
+                        else if (value.type == "null") {
+                            this.state[key] = null;
+                        }
+                        //set state to initial value from element, typically from attribute
+                        if (this.element[key] != undefined) {
+                            this.state[key] = this.element[key]
+                        }
                     }
                 });
             };
         }
+        this.loadState();
     }
 
 
@@ -220,8 +257,6 @@ export class MvStore {
                     }
                 }
             }
-            //TODO move that in mutation methods
-            this.storeState();
         }
     }
 
@@ -237,33 +272,47 @@ export class MvStore {
 
     /** State storage function */
     storeState() {
-        if (this.parentStore) {
+        if(this.serverStore) {
+            storeCEIAsynch(this.repository,this.name,this.model.modelClass,this.state);
+        }
+        if (this.localStore && this.parentStore) {
             this.parentStore.storeState();
         } else {
-            if (this.storage == "localStorage") {
-                //TODO filter out subStores
+            if (this.localStore) {
                 localStorage.setItem(this.name, JSON.stringify(this.state));
-                //TODO then trigger storage of all substores
             }
         }
     }
 
     /**TODO implement storage of sub stores independantly */
     loadState() {
-        if (!this.parentStore) {
-            if (this.storage == "localStorage") {
-                let loadedState = JSON.parse(localStorage.getItem(this.name));
-                if (loadedState != null) {
-                    this.state = { ...this.state, ...loadedState };
+        if(this.serverStore){
+            if(this.model.filters){
+                let filter = {};
+                for(let filterName of this.model.filters){
+                    if(this.element[filterName]!=null){
+                        filter[filterName]=this.element[filterName];
+                    }
                 }
+                let data = fetchCEISync(this.repository,this.model.modelClass,filter)
+                if (data != null) {
+                    this.state = { ...this.state, ...data };
+                }
+            }
+        }
+        if (!this.parentStore && this.localStore) {
+            let loadedState = JSON.parse(localStorage.getItem(this.name));
+            if (loadedState != null) {
+                this.state = { ...this.state, ...loadedState };
             }
         }
     }
 
-    /** State mutation functions */
 
+    /** State mutation functions */
     updateValue(itemName, newValue, dispatch = true) {
         this.state[itemName] = newValue;
+        this.storeState();
         if (dispatch) {
             this.dispatch(itemName);
         }
@@ -276,6 +325,7 @@ export class MvStore {
             ...this.state[itemName],
             item
         ];
+        this.storeState();
         if (dispatch) {
             this.dispatch(itemName);
         }
@@ -284,6 +334,7 @@ export class MvStore {
     removeItem(itemName, item, dispatch = true) {
         //FIXME we should get the filter from the model
         this.state[itemName] = this.state[itemName].filter(t => t.value != item.value);
+        this.storeState();
         if (dispatch) {
             this.dispatch(itemName);
         }
@@ -297,6 +348,7 @@ export class MvStore {
             };
             return t
         });
+        this.storeState();
         if (dispatch) {
             this.dispatch(itemName);
         }

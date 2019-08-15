@@ -1,0 +1,628 @@
+{
+	"info": {
+		"_postman_id": "293cfb38-3c2f-4b36-804f-3a8153ba42e4",
+		"name": "TodoList",
+		"description": "1/ Login\n\n2/ Create a CET stored in NEO4J and Postgres with properties : \n- neo4jValue : stored in neo4j\n- sqlValue : stored in postgres\n\n3/ Create a CET stored in Postgres with properties : \n- referenceValue : stored in postgres, reference to the first CET\n- ceiValue : stored in postgres, reference to the third CET\n\n4/ Create a CET stored in CEI : \n- sqlCeiValue : stored in CEI\n\n5/ Insert data\n\n6/ Retrieve data and store ids\n\n7/ Delete inserted data",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "81606899-040a-4cda-813d-3275ae195602",
+								"exec": [
+									"pm.test(\"response is ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.environment.get(\"variable_key\");",
+									"var json = pm.response.json();",
+									"var token = json[\"access_token\"];",
+									"var refreshToken = json[\"refresh_token\"]",
+									"pm.environment.set(\"access_token\", token);",
+									"pm.environment.set(\"refresh_token\", refreshToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "meveo-web",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "meveo.admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "meveo",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "afe07e5a-68cb-4fb0-8b75-5b6053b07dc3",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/auth/realms/{{webContext}}/protocol/openid-connect/token",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"auth",
+								"realms",
+								"{{webContext}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						},
+						"description": "Request Keycloak and get auth token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create CETs",
+			"item": [
+				{
+					"name": "CET TodoItem transient",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"TodoItem\",\n    \"code\": \"TodoItem\",\n    \"description\": \"Todo item\",\n    \"customEntityCategoryCode\": \"TODO\",\n    \"field\": [\n        {\n            \"code\": \"value\",\n            \"fieldType\": \"STRING\",\n            \"storageType\": \"SINGLE\",\n            \"valueRequired\": true,\n            \"description\": \"value\",\n            \"isUnique\": true\n        },\n        {\n            \"code\": \"completed\",\n            \"fieldType\": \"BOOLEAN\",\n            \"storageType\": \"SINGLE\",\n            \"valueRequired\": false,\n            \"description\": \"completed\",\n            \"isUnique\": false\n        }\n    ],\n    \"availableStorages\": [\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/entityCustomization/cet/createOrUpdate",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{webContext}}",
+								"api",
+								"rest",
+								"entityCustomization",
+								"cet",
+								"createOrUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get CET TodoItem",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/TodoItem",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"entity",
+								"TodoItem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CET TodoList in Sql",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"code\": \"TodoList\",\n        \"name\": \"Todo List\",\n        \"description\": \"Todo List\",\n        \"customEntityCategoryCode\": \"TODO\",\n        \"availableStorages\": [\n            \"SQL\"\n        ],\n        \"sqlStorageConfiguration\": {\n            \"storeAsTable\": true\n        },\n        \"field\": [\n            {\n                \"code\": \"title\",\n                \"description\": \"title\",\n                \"fieldType\": \"STRING\",\n                \"accountLevel\": \"CE_TodoList\",\n                \"appliesTo\": \"CE_TodoList\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"maxValue\": 255,\n                \"guiPosition\": \"tab:Todo List:0;field:0\",\n                \"isUnique\": true,\n                \"isFilter\": false,\n                \"identifier\": true,\n                \"storages\": [\"SQL\"],\n                \"summary\": true\n            },\n            {\n                \"code\": \"items\",\n                \"description\": \"items\",\n                \"fieldType\": \"CHILD_ENTITY\",\n                \"accountLevel\": \"CE_TodoList\",\n                \"appliesTo\": \"CE_TodoList\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"LIST\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"entityClazz\": \"org.meveo.model.customEntities.CustomEntityTemplate - TodoItem\",\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Todo List:0;field:1\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": [\"SQL\"],\n                \"summary\": true,\n                \"fieldCode\": [\n                    \"value\",\n                    \"completed\"\n                ]\n            },\n            {\n                \"code\": \"icon\",\n                \"description\": \"icon\",\n                \"fieldType\": \"BINARY\",\n                \"accountLevel\": \"CE_TodoList\",\n                \"appliesTo\": \"CE_TodoList\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Todo List:0;field:2\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": [\n                    \"SQL\"\n                ],\n                \"summary\": false\n            }\n        ]\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/entityCustomization/cet/createOrUpdate",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{webContext}}",
+								"api",
+								"rest",
+								"entityCustomization",
+								"cet",
+								"createOrUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get CET TodoList",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/TodoList",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"entityCustomization",
+								"entity",
+								"TodoList"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Insert data",
+			"item": [
+				{
+					"name": "Insert data",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n    \t\"name\": \"todo2\",\n    \t\"type\": \"TodoList\",\n    \t\"properties\": {\n    \t\t\"title\" : \"List 2\",\n    \t\t\"items\": [{\n    \t\t\t\"value\": \"My item\",\n    \t\t\t\"completed\": false\n    \t\t},{\n    \t\t\t\"value\": \"My second item\",\n    \t\t\t\"completed\": false\n    \t\t},{\n    \t\t\t\"value\": \"Old item 2\",\n    \t\t\t\"completed\": true\n    \t\t}]\n    \t}\n    }\n]"
+						},
+						"url": {
+							"raw": "https://{{hostname}}:{{port}}/investigation-core/api/rest/localhost/persistence",
+							"protocol": "https",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"localhost",
+								"persistence"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Insert data with icon file",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n    \t\"name\": \"todo2\",\n    \t\"type\": \"TodoList\",\n    \t\"properties\": {\n    \t\t\"title\" : \"List 2\",\n    \t\t\"items\": [{\n    \t\t\t\"value\": \"My item\",\n    \t\t\t\"completed\": false\n    \t\t},{\n    \t\t\t\"value\": \"My second item\",\n    \t\t\t\"completed\": false\n    \t\t},{\n    \t\t\t\"value\": \"Old item 2\",\n    \t\t\t\"completed\": true\n    \t\t}]\n    \t}\n    }\n]"
+						},
+						"url": {
+							"raw": "https://{{hostname}}:{{port}}/investigation-core/api/rest/localhost/persistence",
+							"protocol": "https",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"localhost",
+								"persistence"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Filters test",
+			"item": [
+				{
+					"name": "Retrieve all fields stored in SQL  using filter on a field stored in SQL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7d807fbd-cab5-4b74-8fd5-fb86bd2d37f3",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"neojValue and sqlValue has been returned\", function () {",
+									"    pm.expect(jsonData[0].sqlValue).to.eql(\"MySqlValue\");",
+									"});",
+									"",
+									"var uuid = jsonData[0].uuid || jsonData[0].meveo_uuid;",
+									"pm.globals.set(\"NeoSqlCetId\", uuid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\t\"filters\" : {\r\t\t\"title\" : \"List 2\"\r\t}\r} "
+						},
+						"url": {
+							"raw": "https://{{hostname}}:{{port}}/investigation-core/api/rest/localhost/persistence/TodoList/list",
+							"protocol": "https",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"localhost",
+								"persistence",
+								"TodoList",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve icon",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7d807fbd-cab5-4b74-8fd5-fb86bd2d37f3",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"neojValue and sqlValue has been returned\", function () {",
+									"    pm.expect(jsonData[0].sqlValue).to.eql(\"MySqlValue\");",
+									"});",
+									"",
+									"var uuid = jsonData[0].uuid || jsonData[0].meveo_uuid;",
+									"pm.globals.set(\"NeoSqlCetId\", uuid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\t\"filters\" : {\r\t\t\"title\" : \"List 2\"\r\t}\r} "
+						},
+						"url": {
+							"raw": "https://{{hostname}}:{{port}}/investigation-core/api/rest/localhost/persistence/TodoList/list",
+							"protocol": "https",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"investigation-core",
+								"api",
+								"rest",
+								"localhost",
+								"persistence",
+								"TodoList",
+								"list"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete Test data",
+			"item": [
+				{
+					"name": "Delete TodoList",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/entityCustomization/entity/TodoList",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{webContext}}",
+								"api",
+								"rest",
+								"entityCustomization",
+								"entity",
+								"TodoList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete TodoItem",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"TestCet\",\r\n  \"code\": \"TestCet\",\r\n  \"description\": \"TestCet\",\r\n  \"availableStorages\": [\"SQL\", \"NEO4J\"],\r\n  \"field\": [\r\n    {\r\n      \"code\": \"languageCode\",\r\n      \"storages\": [\"SQL\"],\r\n      \"fieldType\": \"STRING\",\r\n      \"storageType\": \"SINGLE\",\r\n      \"valueRequired\": false,\r\n      \"description\": \"creationDate\",\r\n      \"isUnique\": false\r\n    }\r\n  ],\r\n  \"customEntityCategoryCode\": \"Test\",\r\n  \"uniqueConstraint\": [],\r\n  \"graphqlQueryFields\": []\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/entityCustomization/entity/TodoItem",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{webContext}}",
+								"api",
+								"rest",
+								"entityCustomization",
+								"entity",
+								"TodoItem"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "d9332ebe-c7a1-4ed3-b35d-b11d922c3420",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "ff7335a6-6abf-42e8-98db-d0c52674bdb5",
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"response is ok\", function () {",
+					"    pm.expect(pm.response.code).to.be.oneOf([200, 201,202,203,204]);",
+					"});"
+				]
+			}
+		}
+	]
+}

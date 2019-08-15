@@ -5,16 +5,6 @@ import  "./TodoList.js";
 
 
 class MtdApp extends MvElement {
-
-    static get properties(){return {
-      name: { attribute: true }
-    };}
-
-    static get model(){
-      return { 
-          storage:"localStorage"
-        };
-    }
     
     static get styles() {
       return css`
@@ -32,22 +22,23 @@ class MtdApp extends MvElement {
       }
 
       todo-list[name='todo2']{
-        --backgroundColor:green;
+        --backgroundColor:cyan;
       }
+
       `;
     } 
 
     firstUpdated(changedProperties){
       let counterElmt = this.shadowRoot.querySelector("mtd-counter");
-      this.store.registerElementListener(counterElmt,[{property:"counter",jsonataExpression:"$count(todo1.items)+$count(todo2.items)"}]);
+      this.store.registerElementListener(counterElmt,[{property:"counter",jsonataExpression:"$count(todo1.items)+$count(todo2.items)+$count(todo3.items)"}]);
       this.store.dispatch();
     }
 
     render(){
       return html`
         <mtd-counter name="counter"></mtd-counter>
-        <todo-list title="Hello Todo" name="todo1"></todo-list>
-        <todo-list title="Second Todo" name="todo2"></todo-list>
+        <todo-list title="Hello Todo" name="todo1" storage-modes="local"></todo-list>
+        <todo-list title="Second Todo" name="todo2" storage-modes="server,local"></todo-list>
       `;
   }
 }

@@ -4,6 +4,13 @@ export * from './lit-element.js';
 
 export class MvElement extends LitElement {
 
+    static get properties() {
+        return {
+          name: {  type : String, attribute: true },
+          storageModes: { type : String, attribute:'storage-modes'}
+        };
+    }
+
     getParentStore(element){
         if(element == undefined){
             return null;
@@ -26,7 +33,8 @@ export class MvElement extends LitElement {
         //TODO set parent store to its first parent MvElement's store.
         let parentStore=this.getParentStore(this.parentNode);
         //initialise store from model
-        this.store = new MvStore(this.attributes['name'].value,this,parentStore);
+        //FIXME get repository from user info
+        this.store = new MvStore("OVH_integration",this.attributes['name'].value,this,parentStore);
         super.connectedCallback();
     }
     

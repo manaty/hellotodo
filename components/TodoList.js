@@ -1,32 +1,32 @@
 import { MvElement } from "../web_modules/mv-element.js";
-import { html ,css} from '../web_modules/lit-element.js';
-import  "./TodoItem.js";
-import  "./TodoCreator.js";
+import { html, css } from '../web_modules/lit-element.js';
+import "./TodoItem.js";
+import "./TodoCreator.js";
 
 class TodoList extends MvElement {
-    static get properties() {
-        return {
-          name: { type : String , attribute: true },
-          title: { type : String },
-          todoItems: { type: Array },
-          count:{  type : Number ,attribute: false }
-        }
-    }
+  static get properties() {
+    return {
+      ...super.properties,
+      title: { type: String },
+      todoItems: { type: Array },
+      count: { type: Number, attribute: false }
+    };
+  }
 
-    static get model(){
-      return { 
-          modelClass:"TodoList",
-          storage:"localStorage",
-          mappings:[
-            {property:"title",value:"title"},
-            {property:"todoItems",value:"items"},
-            {property:"count",jsonataExpression:"$count(items)"},
-          ]
-        };
-    }
-    
-    static get styles() {
-      return css`
+  static get model() {
+    return {
+      modelClass: "TodoList",
+      mappings: [
+        { property: "title", value: "title" },
+        { property: "todoItems", value: "items" },
+        { property: "count", jsonataExpression: "$count(items)" },
+      ],
+      filters:["title"]
+    };
+  }
+
+  static get styles() {
+    return css`
       :host {
         display: block;
         text-align:center;
@@ -37,28 +37,28 @@ class TodoList extends MvElement {
         font-size:2em;
       }
       `;
-    } 
-  
-    constructor(){
-        super();
-        this.todoItems = [];
-        this.count=0;
-    }
+  }
 
-    todoCreationHandler(e){
-      this.store.addItem("items",e.detail);
-    }
+  constructor() {
+    super();
+    this.todoItems = [];
+    this.count = 0;
+  }
 
-    todoDeletionHandler(e){
-      this.store.removeItem("items",e.detail);
-    }
+  todoCreationHandler(e) {
+    this.store.addItem("items", e.detail);
+  }
 
-    todoCompletionHandler(e){
-      this.store.updateItem("items",{...e.detail,completed:true});
-    }
+  todoDeletionHandler(e) {
+    this.store.removeItem("items", e.detail);
+  }
 
-    render(){
-      return html`
+  todoCompletionHandler(e) {
+    this.store.updateItem("items", { ...e.detail, completed: true });
+  }
+
+  render() {
+    return html`
       <div class="title">${this.title} (${this.count})</div>
       <div class="todo-items">
         ${this.todoItems.map(i => html`<todo-item @todo-delete="${this.todoDeletionHandler}" @todo-complete="${this.todoCompletionHandler}" .value="${i.value}" .completed=${i.completed}></todo-item>`)}
@@ -67,4 +67,4 @@ class TodoList extends MvElement {
   }
 }
 
-window.customElements.define("todo-list",TodoList);
+window.customElements.define("todo-list", TodoList);
