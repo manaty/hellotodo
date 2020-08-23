@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "293cfb38-3c2f-4b36-804f-3a8153ba42e4",
+		"_postman_id": "ac81ee51-be0f-4080-adc3-2c29035faf5e",
 		"name": "TodoList",
 		"description": "1/ Login\n\n2/ Create a CET stored in NEO4J and Postgres with properties : \n- neo4jValue : stored in neo4j\n- sqlValue : stored in postgres\n\n3/ Create a CET stored in Postgres with properties : \n- referenceValue : stored in postgres, reference to the first CET\n- ceiValue : stored in postgres, reference to the third CET\n\n4/ Create a CET stored in CEI : \n- sqlCeiValue : stored in CEI\n\n5/ Insert data\n\n6/ Retrieve data and store ids\n\n7/ Delete inserted data",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -73,12 +73,12 @@
 							]
 						},
 						"url": {
-							"raw": "{{protocol}}://{{hostname}}:{{port}}/auth/realms/{{webContext}}/protocol/openid-connect/token",
+							"raw": "{{protocol}}://{{keycloak.hostname}}:{{keycloak.port}}/auth/realms/{{webContext}}/protocol/openid-connect/token",
 							"protocol": "{{protocol}}",
 							"host": [
-								"{{hostname}}"
+								"{{keycloak.hostname}}"
 							],
-							"port": "{{port}}",
+							"port": "{{keycloak.port}}",
 							"path": [
 								"auth",
 								"realms",
@@ -92,11 +92,57 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Create CETs",
 			"item": [
+				{
+					"name": "Todo Lists Entity Category",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\": \"TODO\",\r\n    \"name\": \"Todo Lists\"\r\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/customEntityCategory/entity/createOrUpdate",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{hostname}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"{{webContext}}",
+								"api",
+								"rest",
+								"customEntityCategory",
+								"entity",
+								"createOrUpdate"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "CET TodoItem transient",
 					"request": {
@@ -126,7 +172,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"TodoItem\",\n    \"code\": \"TodoItem\",\n    \"description\": \"Todo item\",\n    \"customEntityCategoryCode\": \"TODO\",\n    \"field\": [\n        {\n            \"code\": \"value\",\n            \"fieldType\": \"STRING\",\n            \"storageType\": \"SINGLE\",\n            \"valueRequired\": true,\n            \"description\": \"value\",\n            \"isUnique\": true\n        },\n        {\n            \"code\": \"completed\",\n            \"fieldType\": \"BOOLEAN\",\n            \"storageType\": \"SINGLE\",\n            \"valueRequired\": false,\n            \"description\": \"completed\",\n            \"isUnique\": false\n        }\n    ],\n    \"availableStorages\": [\n    ]\n}"
+							"raw": "{\n    \"name\": \"TodoItem\",\n    \"code\": \"TodoItem\",\n    \"description\": \"Todo item\",\n    \"customEntityCategoryCode\": \"TODO\",\n   \"fields\" : [ {\n        \"code\" : \"COMPLETED\",\n        \"description\" : \"completed\",\n        \"fieldType\" : \"BOOLEAN\",\n        \"accountLevel\" : \"CE_TODOITEM\",\n        \"appliesTo\" : \"CE_TODOITEM\",\n        \"useInheritedAsDefaultValue\" : false,\n        \"storageType\" : \"SINGLE\",\n        \"valueRequired\" : false,\n        \"versionable\" : false,\n        \"triggerEndPeriodEvent\" : false,\n        \"listValues\" : { },\n        \"allowEdit\" : true,\n        \"hideOnNew\" : false,\n        \"contentTypes\" : [ ],\n        \"fileExtensions\" : [ ],\n        \"saveOnExplorer\" : false,\n        \"guiPosition\" : \"tab:Todo Item:0;field:1\",\n        \"identifier\" : false,\n        \"matrixColumns\" : [ ],\n        \"storages\" : [ ],\n        \"samples\" : [ ],\n        \"summary\" : false,\n        \"filter\" : false,\n        \"unique\" : false\n      }, {\n        \"code\" : \"VALUE\",\n        \"description\" : \"value\",\n        \"fieldType\" : \"STRING\",\n        \"accountLevel\" : \"CE_TODOITEM\",\n        \"appliesTo\" : \"CE_TODOITEM\",\n        \"useInheritedAsDefaultValue\" : false,\n        \"storageType\" : \"SINGLE\",\n        \"valueRequired\" : true,\n        \"versionable\" : false,\n        \"triggerEndPeriodEvent\" : false,\n        \"listValues\" : { },\n        \"allowEdit\" : true,\n        \"hideOnNew\" : false,\n        \"maxValue\" : 255,\n        \"contentTypes\" : [ ],\n        \"fileExtensions\" : [ ],\n        \"saveOnExplorer\" : false,\n        \"guiPosition\" : \"tab:Todo Item:0;field:0\",\n        \"identifier\" : false,\n        \"matrixColumns\" : [ ],\n        \"storages\" : [ ],\n        \"samples\" : [ ],\n        \"summary\" : false,\n        \"filter\" : false,\n        \"unique\" : false\n      } ],\n    \"availableStorages\": [\n    ]\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/entityCustomization/cet/createOrUpdate",
@@ -163,14 +209,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/TodoItem",
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/entityCustomization/entity/TodoItem",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{hostname}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"investigation-core",
+								"{{webContext}}",
 								"api",
 								"rest",
 								"entityCustomization",
@@ -210,7 +256,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"code\": \"TodoList\",\n        \"name\": \"Todo List\",\n        \"description\": \"Todo List\",\n        \"customEntityCategoryCode\": \"TODO\",\n        \"availableStorages\": [\n            \"SQL\"\n        ],\n        \"sqlStorageConfiguration\": {\n            \"storeAsTable\": true\n        },\n        \"field\": [\n            {\n                \"code\": \"title\",\n                \"description\": \"title\",\n                \"fieldType\": \"STRING\",\n                \"accountLevel\": \"CE_TodoList\",\n                \"appliesTo\": \"CE_TodoList\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"maxValue\": 255,\n                \"guiPosition\": \"tab:Todo List:0;field:0\",\n                \"isUnique\": true,\n                \"isFilter\": false,\n                \"identifier\": true,\n                \"storages\": [\"SQL\"],\n                \"summary\": true\n            },\n            {\n                \"code\": \"items\",\n                \"description\": \"items\",\n                \"fieldType\": \"CHILD_ENTITY\",\n                \"accountLevel\": \"CE_TodoList\",\n                \"appliesTo\": \"CE_TodoList\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"LIST\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"entityClazz\": \"org.meveo.model.customEntities.CustomEntityTemplate - TodoItem\",\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Todo List:0;field:1\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": [\"SQL\"],\n                \"summary\": true,\n                \"fieldCode\": [\n                    \"value\",\n                    \"completed\"\n                ]\n            },\n            {\n                \"code\": \"icon\",\n                \"description\": \"icon\",\n                \"fieldType\": \"BINARY\",\n                \"accountLevel\": \"CE_TodoList\",\n                \"appliesTo\": \"CE_TodoList\",\n                \"useInheritedAsDefaultValue\": false,\n                \"storageType\": \"SINGLE\",\n                \"valueRequired\": false,\n                \"versionable\": false,\n                \"triggerEndPeriodEvent\": false,\n                \"allowEdit\": true,\n                \"hideOnNew\": false,\n                \"guiPosition\": \"tab:Todo List:0;field:2\",\n                \"isUnique\": false,\n                \"isFilter\": false,\n                \"identifier\": false,\n                \"storages\": [\n                    \"SQL\"\n                ],\n                \"summary\": false\n            }\n        ]\n}"
+							"raw": "{\n        \"code\": \"TodoList\",\n        \"name\": \"Todo List\",\n        \"description\": \"Todo List\",\n        \"customEntityCategoryCode\": \"TODO\",\n        \"availableStorages\": [\n            \"SQL\"\n        ],\n        \"sqlStorageConfiguration\": {\n            \"storeAsTable\": true\n        },\n\"fields\" : [ {\n        \"code\" : \"ICON\",\n        \"description\" : \"Icon\",\n        \"fieldType\" : \"BINARY\",\n        \"accountLevel\" : \"CE_TODOLIST\",\n        \"appliesTo\" : \"CE_TODOLIST\",\n        \"useInheritedAsDefaultValue\" : false,\n        \"storageType\" : \"SINGLE\",\n        \"valueRequired\" : false,\n        \"versionable\" : false,\n        \"triggerEndPeriodEvent\" : false,\n        \"listValues\" : { },\n        \"allowEdit\" : true,\n        \"hideOnNew\" : false,\n        \"contentTypes\" : [ ],\n        \"fileExtensions\" : [ ],\n        \"saveOnExplorer\" : false,\n        \"guiPosition\" : \"tab:Lists:0;field:2\",\n        \"identifier\" : false,\n        \"storages\" : [ \"SQL\" ],\n        \"samples\" : [ ],\n        \"summary\" : false\n      }, {\n        \"code\" : \"ITEMS\",\n        \"description\" : \"Items\",\n        \"fieldType\" : \"CHILD_ENTITY\",\n        \"accountLevel\" : \"CE_TODOLIST\",\n        \"appliesTo\" : \"CE_TODOLIST\",\n        \"useInheritedAsDefaultValue\" : false,\n        \"storageType\" : \"LIST\",\n        \"valueRequired\" : false,\n        \"versionable\" : false,\n        \"triggerEndPeriodEvent\" : false,\n        \"entityClazz\" : \"org.meveo.model.customEntities.CustomEntityTemplate - TODOITEM\",\n        \"childEntityFieldsForSummary\" : [ \"VALUE\", \"COMPLETED\" ],\n        \"listValues\" : { },\n        \"allowEdit\" : true,\n        \"hideOnNew\" : false,\n        \"contentTypes\" : [ ],\n        \"fileExtensions\" : [ ],\n        \"saveOnExplorer\" : false,\n        \"guiPosition\" : \"tab:Lists:0;field:1\",\n        \"identifier\" : false,\n        \"storages\" : [ \"SQL\" ],\n        \"samples\" : [ ],\n        \"summary\" : false\n      }, {\n        \"code\" : \"NAME\",\n        \"description\" : \"name\",\n        \"fieldType\" : \"STRING\",\n        \"accountLevel\" : \"CE_TODOLIST\",\n        \"appliesTo\" : \"CE_TODOLIST\",\n        \"useInheritedAsDefaultValue\" : false,\n        \"storageType\" : \"SINGLE\",\n        \"valueRequired\" : false,\n        \"versionable\" : false,\n        \"triggerEndPeriodEvent\" : false,\n        \"listValues\" : { },\n        \"allowEdit\" : true,\n        \"hideOnNew\" : false,\n        \"maxValue\" : 50,\n        \"contentTypes\" : [ ],\n        \"fileExtensions\" : [ ],\n        \"saveOnExplorer\" : false,\n        \"guiPosition\" : \"tab:Lists:0;field:0\",\n        \"identifier\" : false,\n        \"storages\" : [ \"SQL\" ],\n        \"samples\" : [ \"Work task\", \"Grocery\", \"Books to read\" ],\n        \"summary\" : false\n      } ]\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/entityCustomization/cet/createOrUpdate",
@@ -247,14 +293,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{protocol}}://{{hostname}}:{{port}}/investigation-core/api/rest/entityCustomization/entity/TodoList",
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/entityCustomization/entity/TodoList",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{hostname}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"investigation-core",
+								"{{webContext}}",
 								"api",
 								"rest",
 								"entityCustomization",
@@ -265,7 +311,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Insert data",
@@ -297,17 +344,17 @@
 							"raw": "[\n    {\n    \t\"name\": \"todo2\",\n    \t\"type\": \"TodoList\",\n    \t\"properties\": {\n    \t\t\"title\" : \"List 2\",\n    \t\t\"items\": [{\n    \t\t\t\"value\": \"My item\",\n    \t\t\t\"completed\": false\n    \t\t},{\n    \t\t\t\"value\": \"My second item\",\n    \t\t\t\"completed\": false\n    \t\t},{\n    \t\t\t\"value\": \"Old item 2\",\n    \t\t\t\"completed\": true\n    \t\t}]\n    \t}\n    }\n]"
 						},
 						"url": {
-							"raw": "https://{{hostname}}:{{port}}/investigation-core/api/rest/localhost/persistence",
-							"protocol": "https",
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/{{repoId}}/persistence",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{hostname}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"investigation-core",
+								"{{webContext}}",
 								"api",
 								"rest",
-								"localhost",
+								"{{repoId}}",
 								"persistence"
 							]
 						}
@@ -332,33 +379,47 @@
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"type": "text",
+								"value": "application/json"
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "[\n    {\n    \t\"name\": \"todo2\",\n    \t\"type\": \"TodoList\",\n    \t\"properties\": {\n    \t\t\"title\" : \"List 2\",\n    \t\t\"items\": [{\n    \t\t\t\"value\": \"My item\",\n    \t\t\t\"completed\": false\n    \t\t},{\n    \t\t\t\"value\": \"My second item\",\n    \t\t\t\"completed\": false\n    \t\t},{\n    \t\t\t\"value\": \"Old item 2\",\n    \t\t\t\"completed\": true\n    \t\t}]\n    \t}\n    }\n]"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "[\n    {\n    \t\"name\": \"todo3\",\n    \t\"type\": \"TodoList\",\n    \t\"properties\": {\n    \t\t\"title\" : \"List 3\",\n    \t\t\"items\": [{\n    \t\t\t\"value\": \"item 10\",\n    \t\t\t\"completed\": false\n    \t\t},{\n    \t\t\t\"value\": \"second item\",\n    \t\t\t\"completed\": false\n    \t\t},{\n    \t\t\t\"value\": \"Old item\",\n    \t\t\t\"completed\": true\n    \t\t}]\n    \t}\n    }\n]",
+									"contentType": "application/json",
+									"type": "text"
+								},
+								{
+									"key": "todo3.icon",
+									"contentType": "",
+									"type": "file",
+									"src": []
+								}
+							]
 						},
 						"url": {
-							"raw": "https://{{hostname}}:{{port}}/investigation-core/api/rest/localhost/persistence",
-							"protocol": "https",
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/{{repoId}}/persistence",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{hostname}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"investigation-core",
+								"{{webContext}}",
 								"api",
 								"rest",
-								"localhost",
+								"{{repoId}}",
 								"persistence"
 							]
 						}
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Filters test",
@@ -406,20 +467,20 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\t\"filters\" : {\r\t\t\"title\" : \"List 2\"\r\t}\r} "
+							"raw": "{\r\t\"filters\" : {\r\t}\r} "
 						},
 						"url": {
-							"raw": "https://{{hostname}}:{{port}}/investigation-core/api/rest/localhost/persistence/TodoList/list",
-							"protocol": "https",
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/{{repoId}}/persistence/TodoList/list",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{hostname}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"investigation-core",
+								"{{webContext}}",
 								"api",
 								"rest",
-								"localhost",
+								"{{repoId}}",
 								"persistence",
 								"TodoList",
 								"list"
@@ -474,26 +535,43 @@
 							"raw": "{\r\t\"filters\" : {\r\t\t\"title\" : \"List 2\"\r\t}\r} "
 						},
 						"url": {
-							"raw": "https://{{hostname}}:{{port}}/investigation-core/api/rest/localhost/persistence/TodoList/list",
-							"protocol": "https",
+							"raw": "{{protocol}}://{{hostname}}:{{port}}/{{webContext}}/api/rest/fileSystem/binaries?repositoryCode={{repoId}}&cetCode=TodoList&uuid=2ee4669d-057e-4ce2-bdc4-588f14b5d6fe&cftCode=icon",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{hostname}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"investigation-core",
+								"{{webContext}}",
 								"api",
 								"rest",
-								"localhost",
-								"persistence",
-								"TodoList",
-								"list"
+								"fileSystem",
+								"binaries"
+							],
+							"query": [
+								{
+									"key": "repositoryCode",
+									"value": "{{repoId}}"
+								},
+								{
+									"key": "cetCode",
+									"value": "TodoList"
+								},
+								{
+									"key": "uuid",
+									"value": "2ee4669d-057e-4ce2-bdc4-588f14b5d6fe"
+								},
+								{
+									"key": "cftCode",
+									"value": "icon"
+								}
 							]
 						}
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Delete Test data",
@@ -598,7 +676,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"event": [
@@ -624,5 +703,6 @@
 				]
 			}
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }
